@@ -1,0 +1,2 @@
+# minamo.js
+
