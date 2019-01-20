@@ -26,28 +26,25 @@ export module minamo
             }
         };
         export const simpleDeepCopy = (source : object) : object => JSON.parse(JSON.stringify(source));
-        export const recursiveAssign = function(target : object, source : object) : void
-        {
-            Object.keys(source).forEach
-            (
-                key =>
+        export const recursiveAssign = (target : object, source : object) : void => objectForEach
+        (
+            source,
+            (key, value) =>
+            {
+                if ("object" === practicalTypeof(value))
                 {
-                    const value = source[key];
-                    if ("object" === practicalTypeof(value))
+                    if (undefined === target[key])
                     {
-                        if (undefined === target[key])
-                        {
-                            target[key] = { };
-                        }
-                        recursiveAssign(target[key], value);
+                        target[key] = { };
                     }
-                    else
-                    {
-                        target[key] = value;
-                    }
+                    recursiveAssign(target[key], value);
                 }
-            );
-        };
+                else
+                {
+                    target[key] = value;
+                }
+            }
+        );
         export const practicalTypeof = function(obj : any) : string
         {
             if (undefined === obj)
@@ -103,6 +100,8 @@ export module minamo
             }
             getParam = (key : string) : string => decodeURIComponent(this.getRawParams()[key]);
 
+            private updateParams = () => this.setRawParamsString(objectToArray(this.rawParams, (k, v) => bond(k, "=", v)).join("&"));
+
             setRawParamsString = (rawParamsString : string) =>
             {
                 this.url = bond(this.getWithoutParams(), "?", rawParamsString);
@@ -111,9 +110,15 @@ export module minamo
             setRawParam = (key : string, rawValue : string) =>
             {
                 this.getRawParams()[key] = rawValue;
-                return this.setRawParamsString(Object.keys(this.rawParams).map(key => bond(key, "=", this.rawParams[key])).join("&"));
+                return this.updateParams();
             }
             setParam = (key : string, value : string) => this.setRawParam(key, encodeURIComponent(value));
+            setRawParams = (params : {[key:string]:string}) =>
+            {
+                this.rawParams = params;
+                return this.updateParams();
+            }
+            setParams = (params : {[key:string]:string}) => this.setRawParams(objectMap(params, (_key, value) => encodeURIComponent(value)));
 
             toString = ()=> this.url;
         }
@@ -173,6 +178,42 @@ export module minamo
             (
                 i => result = result.concat(mapFunction(i))
             );
+            return result;
+        };
+        export const objectForEach = (source : {[key:string]:any}, eachFunction : (key : string, value : any, object : {[key:string]:any}) => void) : void =>
+        {
+            Object.keys(source).forEach
+            (
+                key => eachFunction(key, source[key], source)
+            );
+        };
+        export const objectMap = (source : {[key:string]:any}, mapFunction : (key : string, value : any, object : {[key:string]:any}) => any) : {[key:string]:any} =>
+        {
+            const result : {[key:string]:any} = { };
+            objectForEach(source, key => result[key] = mapFunction(key, source[key], source));
+            return result;
+        };
+        export const objectFilter = (source : {[key:string]:any}, filterFunction : (key : string, value : any, object : {[key:string]:any}) => boolean) : {[key:string]:any} =>
+        {
+            const result : {[key:string]:any} = { };
+            objectForEach
+            (
+                source,
+                key =>
+                {
+                    const value = source[key];
+                    if (filterFunction(key, value, source))
+                    {
+                        result[key] = value;
+                    }
+                }
+            );
+            return result;
+        };
+        export const objectToArray = <ResultT>(source : {[key:string]:any}, mapFunction : (key : string, value : any, object : {[key:string]:any}) => ResultT) : ResultT[] =>
+        {
+            const result : ResultT[] = [ ];
+            objectForEach(source, (key, value) => result.push(mapFunction(key, value, source)));
             return result;
         };
 
@@ -320,9 +361,10 @@ export module minamo
         };
         export const setToElement = (element : Element, arg : any) : Node =>
         {
-            Object.keys(arg).forEach
+            core.objectForEach
             (
-                key =>
+                arg,
+                (key, value) =>
                 {
                     switch(key)
                     {
@@ -334,7 +376,6 @@ export module minamo
                         //  nop
                         break;
                     default:
-                        const value = arg[key];
                         if (undefined !== value)
                         {
                             if ("object" === core.practicalTypeof(value))
@@ -352,14 +393,8 @@ export module minamo
             );
             if (undefined !== arg.attributes)
             {
-                Object.keys(arg.attributes).forEach
-                (
-                    key =>
-                    {
-                        element.setAttribute(key, arg.attributes[key]);
-                        //  memo: value を持たない attribute を設定したい場合には value として "" を指定すれば良い。
-                    }
-                );
+                //  memo: value を持たない attribute を設定したい場合には value として "" を指定すれば良い。
+                core.objectForEach(arg.attributes, (key, value) => element.setAttribute(key, value));
             }
             if (undefined !== arg.children)
             {
@@ -367,13 +402,7 @@ export module minamo
             }
             if (undefined !== arg.eventListener)
             {
-                Object.keys(arg.eventListener).forEach
-                (
-                    key =>
-                    {
-                        element.addEventListener(key, arg.eventListener[key]);
-                    }
-                );
+                core.objectForEach(arg.eventListener, (key, value) => element.addEventListener(key, value));
             }
             if (undefined !== arg.parent)
             {

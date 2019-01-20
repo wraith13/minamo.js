@@ -85,20 +85,17 @@ var minamo;
             });
         };
         core.simpleDeepCopy = function (source) { return JSON.parse(JSON.stringify(source)); };
-        core.recursiveAssign = function (target, source) {
-            Object.keys(source).forEach(function (key) {
-                var value = source[key];
-                if ("object" === core.practicalTypeof(value)) {
-                    if (undefined === target[key]) {
-                        target[key] = {};
-                    }
-                    core.recursiveAssign(target[key], value);
+        core.recursiveAssign = function (target, source) { return core.objectForEach(source, function (key, value) {
+            if ("object" === core.practicalTypeof(value)) {
+                if (undefined === target[key]) {
+                    target[key] = {};
                 }
-                else {
-                    target[key] = value;
-                }
-            });
-        };
+                core.recursiveAssign(target[key], value);
+            }
+            else {
+                target[key] = value;
+            }
+        }); };
         core.practicalTypeof = function (obj) {
             if (undefined === obj) {
                 return "undefined";
@@ -136,15 +133,21 @@ var minamo;
                     return _this.rawParams;
                 };
                 this.getParam = function (key) { return decodeURIComponent(_this.getRawParams()[key]); };
+                this.updateParams = function () { return _this.setRawParamsString(core.objectToArray(_this.rawParams, function (k, v) { return core.bond(k, "=", v); }).join("&")); };
                 this.setRawParamsString = function (rawParamsString) {
                     _this.url = core.bond(_this.getWithoutParams(), "?", rawParamsString);
                     return _this;
                 };
                 this.setRawParam = function (key, rawValue) {
                     _this.getRawParams()[key] = rawValue;
-                    return _this.setRawParamsString(Object.keys(_this.rawParams).map(function (key) { return core.bond(key, "=", _this.rawParams[key]); }).join("&"));
+                    return _this.updateParams();
                 };
                 this.setParam = function (key, value) { return _this.setRawParam(key, encodeURIComponent(value)); };
+                this.setRawParams = function (params) {
+                    _this.rawParams = params;
+                    return _this.updateParams();
+                };
+                this.setParams = function (params) { return _this.setRawParams(core.objectMap(params, function (_key, value) { return encodeURIComponent(value); })); };
                 this.toString = function () { return _this.url; };
             }
             return Url;
@@ -260,6 +263,29 @@ var minamo;
         core.flatMap = function (source, mapFunction) {
             var result = [];
             core.arrayOrToArray(source).forEach(function (i) { return result = result.concat(mapFunction(i)); });
+            return result;
+        };
+        core.objectForEach = function (source, eachFunction) {
+            Object.keys(source).forEach(function (key) { return eachFunction(key, source[key], source); });
+        };
+        core.objectMap = function (source, mapFunction) {
+            var result = {};
+            core.objectForEach(source, function (key) { return result[key] = mapFunction(key, source[key], source); });
+            return result;
+        };
+        core.objectFilter = function (source, filterFunction) {
+            var result = {};
+            core.objectForEach(source, function (key) {
+                var value = source[key];
+                if (filterFunction(key, value, source)) {
+                    result[key] = value;
+                }
+            });
+            return result;
+        };
+        core.objectToArray = function (source, mapFunction) {
+            var result = [];
+            core.objectForEach(source, function (key, value) { return result.push(mapFunction(key, value, source)); });
             return result;
         };
         core.separateAndHead = function (text, separator) {
@@ -387,7 +413,7 @@ var minamo;
             return dom.setToElement(document.createElement(arg.tag), arg);
         };
         dom.setToElement = function (element, arg) {
-            Object.keys(arg).forEach(function (key) {
+            core.objectForEach(arg, function (key, value) {
                 switch (key) {
                     case "tag":
                     case "parent":
@@ -397,7 +423,6 @@ var minamo;
                         //  nop
                         break;
                     default:
-                        var value = arg[key];
                         if (undefined !== value) {
                             if ("object" === core.practicalTypeof(value)) {
                                 core.recursiveAssign(element[key], value);
@@ -410,18 +435,14 @@ var minamo;
                 }
             });
             if (undefined !== arg.attributes) {
-                Object.keys(arg.attributes).forEach(function (key) {
-                    element.setAttribute(key, arg.attributes[key]);
-                    //  memo: value を持たない attribute を設定したい場合には value として "" を指定すれば良い。
-                });
+                //  memo: value を持たない attribute を設定したい場合には value として "" を指定すれば良い。
+                core.objectForEach(arg.attributes, function (key, value) { return element.setAttribute(key, value); });
             }
             if (undefined !== arg.children) {
                 core.arrayOrToArray(arg.children).forEach(function (i) { return element.appendChild(dom.make(i)); });
             }
             if (undefined !== arg.eventListener) {
-                Object.keys(arg.eventListener).forEach(function (key) {
-                    element.addEventListener(key, arg.eventListener[key]);
-                });
+                core.objectForEach(arg.eventListener, function (key, value) { return element.addEventListener(key, value); });
             }
             if (undefined !== arg.parent) {
                 dom.appendChildren(arg.parent, element);
