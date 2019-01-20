@@ -26,8 +26,7 @@
         "skipDefaultLibCheck": true,
         "skipLibCheck": false,
         "pretty": false,
-        "noEmitOnError": true,
-        "outFile": "index.js"
+        "noEmitOnError": true
     },
     "files": [
         "index.ts"
