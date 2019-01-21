@@ -1,0 +1,72 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>minamo.js test page</title>
+
+    <script type="text/javascript" src="https://wraith13.github.io/evil-commonjs/index.js"></script>
+    <script>
+    //  see https://github.com/wraith13/evil-commonjs
+    module.readyToCapture();
+    </script>
+    <script type="text/javascript" src="index.js"></script>
+    <script>
+    module.capture("index.js", ["."]);
+    module.readyToCapture();
+    </script>
+    <script type="text/javascript" src="test.js"></script>
+    <script>
+    module.capture("test.js");
+    </script>
+
+    <style>
+    *
+    {
+        font-family: "MS Gothic";
+    }
+    body
+    {
+        margin: 1em;
+    }
+    table
+    {
+        background-color: lightgray;
+        border-spacing: 2px;
+    }
+    table th
+    {
+        padding: 4px;
+        background-color: azure;
+    }
+    table td
+    {
+        padding: 4px;
+        background-color: white;
+    }
+    table tr:nth-child(2n+1) td
+    {
+        background-color: #EEEEEE;
+    }
+    table th:nth-child(1),
+    table td:nth-child(1)
+    {
+        width: 3em;
+    }
+    table th:nth-child(2),
+    table td:nth-child(2)
+    {
+        width: 3em;
+    }
+    table th:nth-child(3),
+    table td:nth-child(3)
+    {
+        width: 45%;
+    }
+    table th:nth-child(4),
+    table td:nth-child(4)
+    {
+        width: 55%;
+    }
+    </style>
+</head>
+<body onload="test.start()"></body>
+</html>
