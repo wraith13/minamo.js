@@ -72,30 +72,52 @@ export module test
             )
         }
     )
+    export const tryTest = (expression : string) : { isSucceeded : boolean, result : any, error: any } =>
+    {
+        const result =
+        {
+            isSucceeded :  false,
+            result : undefined,
+            error : undefined,
+        };
+        try
+        {
+            result.result = eval(expression);
+            result.isSucceeded = true;
+        }
+        catch(error)
+        {
+            result.error =
+            {
+                type: typeof error,
+                text: error.toString()
+            };
+        }
+        return result;
+    }
     export const equalTest = (expression : string, predicted : any) =>
     {
-        const result = eval(expression);
+        const result = tryTest(expression);
         return {
-            isSucceeded: JSON.stringify(predicted) === JSON.stringify(result),
-            testType:"equal",
-            expression: `${JSON.stringify(predicted)} === ${expression}`,
-            data: { predicted, result },
+            isSucceeded : result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
+            testType : "equal",
+            expression : `${JSON.stringify(predicted)} === ${expression}`,
+            data : result.isSucceeded ?
+                { predicted, result:result.result, }:
+                { predicted, error:result.error, },
         };
     }
     export const errorTest = (expression : string) =>
     {
-        let isSucceeded = false;
-        let data : any = { };
-        try
-        {
-            data.result = eval(expression);
-        }
-        catch(error)
-        {
-            data.error = error;
-            isSucceeded = true;
-        }
-        return { isSucceeded: isSucceeded, testType:"error", expression, data };
+        const result = tryTest(expression);
+        return {
+            isSucceeded : !result.isSucceeded,
+            testType : "equal",
+            expression,
+            data : result.isSucceeded ?
+                { result:result.result, }:
+                { error:result.error, },
+        };
     }
     export const start = async () : Promise<void> =>
     {
