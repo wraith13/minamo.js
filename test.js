@@ -91,11 +91,43 @@ var test;
             }))
         });
     };
+    test.equalTest = function (expression, predicted) {
+        var result = eval(expression);
+        return {
+            isSucceeded: JSON.stringify(predicted) === JSON.stringify(result),
+            testType: "equal",
+            expression: JSON.stringify(predicted) + " === " + expression,
+            data: { predicted: predicted, result: result },
+        };
+    };
+    test.errorTest = function (expression) {
+        var isSucceeded = false;
+        var data = {};
+        try {
+            data.result = eval(expression);
+        }
+        catch (error) {
+            data.error = error;
+            isSucceeded = true;
+        }
+        return { isSucceeded: isSucceeded, testType: "error", expression: expression, data: data };
+    };
     test.start = function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             _1.minamo.dom.appendChildren(document.body, [
                 { tag: "h1", children: "minamo.js test list" },
                 { tag: "h2", children: "minamo.core" },
+                { tag: "h3", children: "minamo.core.exists" },
+                makeResultTable([
+                    test.equalTest("minamo.core.exists(\"abc\")", true),
+                    test.equalTest("minamo.core.exists(true)", true),
+                    test.equalTest("minamo.core.exists(false)", true),
+                    test.equalTest("minamo.core.exists(\"0\")", true),
+                    test.equalTest("minamo.core.exists(0)", true),
+                    test.equalTest("minamo.core.exists(\"\")", true),
+                    test.equalTest("minamo.core.exists(null)", false),
+                    test.equalTest("minamo.core.exists(undefined)", false),
+                ]),
                 { tag: "h3", children: "minamo.core.separate" },
                 makeResultTable([
                     test.equalTest("minamo.core.separate(\"abc@def\", \"@\")", { head: "abc", tail: "def" }),
@@ -126,30 +158,20 @@ var test;
                     test.errorTest("minamo.core.separateAndTail(null, \"@\")"),
                     test.equalTest("minamo.core.separateAndTail(\"abc@def\", null)", null),
                 ]),
+                { tag: "h3", children: "minamo.core.bond" },
+                makeResultTable([
+                    test.equalTest("minamo.core.bond(\"abc\", \"@\", \"def\")", "abc@def"),
+                    test.equalTest("minamo.core.bond(\"abc\", \"@\", \"\")", "abc@"),
+                    test.equalTest("minamo.core.bond(\"\", \"@\", \"def\")", "@def"),
+                    test.equalTest("minamo.core.bond(\"abc\", \"@\", null)", "abc"),
+                    test.errorTest("minamo.core.bond(null, null, null)"),
+                    test.errorTest("minamo.core.bond(null, \"@\", null)"),
+                    test.errorTest("minamo.core.bond(null, \"@\", \"def\")"),
+                    test.errorTest("minamo.core.bond(\"abc\", null, \"def\")"),
+                ]),
             ]);
             return [2 /*return*/];
         });
     }); };
-    test.equalTest = function (expression, predicted) {
-        var result = eval(expression);
-        return {
-            isSucceeded: JSON.stringify(predicted) === JSON.stringify(result),
-            testType: "equal",
-            expression: JSON.stringify(predicted) + " === " + expression,
-            data: { predicted: predicted, result: result },
-        };
-    };
-    test.errorTest = function (expression) {
-        var isSucceeded = false;
-        var data = {};
-        try {
-            data.result = eval(expression);
-        }
-        catch (error) {
-            data.error = error;
-            isSucceeded = true;
-        }
-        return { isSucceeded: isSucceeded, testType: "error", expression: expression, data: data };
-    };
 })(test = exports.test || (exports.test = {}));
 //# sourceMappingURL=test.js.map
