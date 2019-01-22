@@ -128,7 +128,7 @@ export module test
         const result = tryTest(expression);
         return {
             isSucceeded : !result.isSucceeded,
-            testType : "equal",
+            testType : "error",
             expression,
             data : result.isSucceeded ?
                 { result:result.result, }:
@@ -141,7 +141,15 @@ export module test
         (
             document.body,
             [
-                { tag : "h1", children : "minamo.js test list" },
+                { tag : "h1", children : "minamo.js test page" },
+                {
+                    tag: "p",
+                    children:
+                    [
+                        "minamo.js is a necessary and sufficient and simple and compact JavaScript/TypeScript library.",
+                        { tag: "a", className: "github", href:"https://github.com/wraith13/minamo.js", children: "GitHub", },
+                    ],
+                },
                 { tag : "h2", children : "summary" },
                 { tag : "h2", children : "minamo.core" },
                 { tag : "h3", children : "minamo.core.exists" },

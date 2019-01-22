@@ -139,7 +139,7 @@ var test;
         var result = test.tryTest(expression);
         return {
             isSucceeded: !result.isSucceeded,
-            testType: "equal",
+            testType: "error",
             expression: expression,
             data: result.isSucceeded ?
                 { result: result.result, } :
@@ -149,7 +149,14 @@ var test;
     test.start = function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             _1.minamo.dom.appendChildren(document.body, [
-                { tag: "h1", children: "minamo.js test list" },
+                { tag: "h1", children: "minamo.js test page" },
+                {
+                    tag: "p",
+                    children: [
+                        "minamo.js is a necessary and sufficient and simple and compact JavaScript/TypeScript library.",
+                        { tag: "a", className: "github", href: "https://github.com/wraith13/minamo.js", children: "GitHub", },
+                    ],
+                },
                 { tag: "h2", children: "summary" },
                 { tag: "h2", children: "minamo.core" },
                 { tag: "h3", children: "minamo.core.exists" },
