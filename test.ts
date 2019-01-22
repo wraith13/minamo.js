@@ -9,10 +9,23 @@ export module test
         expression : string;
         data? : { };
     }
+    const counts =
+    {
+        total: 0,
+        ok: 0,
+        ng: 0,
+    };
+    const resultCount = (result : TestResult) : TestResult =>
+    {
+        ++counts.total;
+        result.isSucceeded ? ++counts.ok: ++counts.ng;
+        return result;
+    }
     const makeResultTable = (result : TestResult[]) =>
     (
         {
             tag : "table",
+            className : "details",
             children :
             [
                 {
@@ -39,36 +52,39 @@ export module test
                 },
             ].concat
             (
-                result.map
-                (
-                    i =>
+                result
+                    .map(i => resultCount(i))
+                    .map
                     (
-                        {
-                            tag : "tr",
-                            children :
-                            [
-                                {
-                                    tag : "td",
-                                    children : i.isSucceeded ? "✅ OK": "🚫 NG",
-                                },
-                                {
-                                    tag : "td",
-                                    children : i.testType,
-                                },
-                                {
-                                    tag : "td",
-                                    children : i.expression,
-                                },
-                                {
-                                    tag : "td",
-                                    children : undefined === i ?
-                                        "undefined":
-                                        JSON.stringify(i.data),
-                                },
-                            ]
-                        }
+                        i =>
+                        (
+                            {
+                                tag : "tr",
+                                className: i.isSucceeded ? undefined: "error",
+                                children :
+                                [
+                                    {
+                                        tag : "td",
+                                        children : i.isSucceeded ? "✅ OK": "🚫 NG",
+                                    },
+                                    {
+                                        tag : "td",
+                                        children : i.testType,
+                                    },
+                                    {
+                                        tag : "td",
+                                        children : i.expression,
+                                    },
+                                    {
+                                        tag : "td",
+                                        children : undefined === i ?
+                                            "undefined":
+                                            JSON.stringify(i.data),
+                                    },
+                                ]
+                            }
+                        )
                     )
-                )
             )
         }
     )
@@ -126,6 +142,7 @@ export module test
             document.body,
             [
                 { tag : "h1", children : "minamo.js test list" },
+                { tag : "h2", children : "summary" },
                 { tag : "h2", children : "minamo.core" },
                 { tag : "h3", children : "minamo.core.exists" },
                 makeResultTable
@@ -196,5 +213,53 @@ export module test
                 ),
             ]
         );
+        minamo.dom.appendChildren
+        (
+            document.body,
+            {
+                tag : "table",
+                className : "summary",
+                children :
+                [
+                    {
+                        tag : "tr",
+                        children :
+                        [
+                            {
+                                tag : "th",
+                                children : "total",
+                            },
+                            {
+                                tag : "th",
+                                children : "✅ OK",
+                            },
+                            {
+                                tag : "th",
+                                children : "🚫 NG",
+                            },
+                        ],
+                    },
+                    {
+                        tag : "tr",
+                        children :
+                        [
+                            {
+                                tag : "td",
+                                children : counts.total.toLocaleString(),
+                            },
+                            {
+                                tag : "td",
+                                children : counts.ok.toLocaleString(),
+                            },
+                            {
+                                tag : "td",
+                                children : counts.ng.toLocaleString(),
+                            },
+                        ],
+                    },
+                ],
+            },
+            document.getElementsByTagName("h2")[1]
+        )
     };
 }

@@ -39,9 +39,20 @@ var _1 = require(".");
 var test;
 (function (test) {
     var _this = this;
+    var counts = {
+        total: 0,
+        ok: 0,
+        ng: 0,
+    };
+    var resultCount = function (result) {
+        ++counts.total;
+        result.isSucceeded ? ++counts.ok : ++counts.ng;
+        return result;
+    };
     var makeResultTable = function (result) {
         return ({
             tag: "table",
+            className: "details",
             children: [
                 {
                     tag: "tr",
@@ -64,9 +75,12 @@ var test;
                         },
                     ],
                 },
-            ].concat(result.map(function (i) {
+            ].concat(result
+                .map(function (i) { return resultCount(i); })
+                .map(function (i) {
                 return ({
                     tag: "tr",
+                    className: i.isSucceeded ? undefined : "error",
                     children: [
                         {
                             tag: "td",
@@ -91,31 +105,52 @@ var test;
             }))
         });
     };
+    test.tryTest = function (expression) {
+        var result = {
+            isSucceeded: false,
+            result: undefined,
+            error: undefined,
+        };
+        try {
+            result.result = eval(expression);
+            result.isSucceeded = true;
+        }
+        catch (error) {
+            result.error =
+                {
+                    type: typeof error,
+                    text: error.toString()
+                };
+        }
+        return result;
+    };
     test.equalTest = function (expression, predicted) {
-        var result = eval(expression);
+        var result = test.tryTest(expression);
         return {
-            isSucceeded: JSON.stringify(predicted) === JSON.stringify(result),
+            isSucceeded: result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
             testType: "equal",
             expression: JSON.stringify(predicted) + " === " + expression,
-            data: { predicted: predicted, result: result },
+            data: result.isSucceeded ?
+                { predicted: predicted, result: result.result, } :
+                { predicted: predicted, error: result.error, },
         };
     };
     test.errorTest = function (expression) {
-        var isSucceeded = false;
-        var data = {};
-        try {
-            data.result = eval(expression);
-        }
-        catch (error) {
-            data.error = error;
-            isSucceeded = true;
-        }
-        return { isSucceeded: isSucceeded, testType: "error", expression: expression, data: data };
+        var result = test.tryTest(expression);
+        return {
+            isSucceeded: !result.isSucceeded,
+            testType: "equal",
+            expression: expression,
+            data: result.isSucceeded ?
+                { result: result.result, } :
+                { error: result.error, },
+        };
     };
     test.start = function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             _1.minamo.dom.appendChildren(document.body, [
                 { tag: "h1", children: "minamo.js test list" },
+                { tag: "h2", children: "summary" },
                 { tag: "h2", children: "minamo.core" },
                 { tag: "h3", children: "minamo.core.exists" },
                 makeResultTable([
@@ -170,6 +205,46 @@ var test;
                     test.errorTest("minamo.core.bond(\"abc\", null, \"def\")"),
                 ]),
             ]);
+            _1.minamo.dom.appendChildren(document.body, {
+                tag: "table",
+                className: "summary",
+                children: [
+                    {
+                        tag: "tr",
+                        children: [
+                            {
+                                tag: "th",
+                                children: "total",
+                            },
+                            {
+                                tag: "th",
+                                children: "✅ OK",
+                            },
+                            {
+                                tag: "th",
+                                children: "🚫 NG",
+                            },
+                        ],
+                    },
+                    {
+                        tag: "tr",
+                        children: [
+                            {
+                                tag: "td",
+                                children: counts.total.toLocaleString(),
+                            },
+                            {
+                                tag: "td",
+                                children: counts.ok.toLocaleString(),
+                            },
+                            {
+                                tag: "td",
+                                children: counts.ng.toLocaleString(),
+                            },
+                        ],
+                    },
+                ],
+            }, document.getElementsByTagName("h2")[1]);
             return [2 /*return*/];
         });
     }); };

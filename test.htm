@@ -1,6 +1,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="theme-color" content="#000022">
     <title>minamo.js test page</title>
 
     <script type="text/javascript" src="https://wraith13.github.io/evil-commonjs/index.js"></script>
@@ -22,10 +23,19 @@
     *
     {
         font-family: "MS Gothic";
+        color: #000022;
     }
     body
     {
-        margin: 1em;
+        margin: 1rem;
+    }
+    h1
+    {
+        margin: -1rem;
+        margin-bottom: 0em;
+        padding: 1rem;
+        color: #FFFFFF;
+        background-color: #000022;
     }
     table
     {
@@ -35,34 +45,50 @@
     table th
     {
         padding: 4px;
-        background-color: azure;
+        background-color: #DDDDFF;
     }
     table td
     {
         padding: 4px;
+    }
+    table tr:not(.error) td
+    {
         background-color: white;
     }
-    table tr:nth-child(2n+1) td
+    table tr.error td
+    {
+        background-color: #FFCCCC;
+    }
+    table tr:nth-child(2n+1):not(.error) td
     {
         background-color: #EEEEEE;
     }
-    table th:nth-child(1),
-    table td:nth-child(1)
+    table.summary
+    {
+        font-size : 1.2em;
+    }
+    table.summary td
+    {
+        width: 4.5em;
+        text-align: right;
+    }
+    table.details th:nth-child(1),
+    table.details td:nth-child(1)
     {
         width: 3em;
     }
-    table th:nth-child(2),
-    table td:nth-child(2)
+    table.details th:nth-child(2),
+    table.details td:nth-child(2)
     {
         width: 3em;
     }
-    table th:nth-child(3),
-    table td:nth-child(3)
+    table.details th:nth-child(3),
+    table.details td:nth-child(3)
     {
         width: 45%;
     }
-    table th:nth-child(4),
-    table td:nth-child(4)
+    table.details th:nth-child(4),
+    table.details td:nth-child(4)
     {
         width: 55%;
     }
