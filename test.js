@@ -116,11 +116,12 @@ var test;
             result.isSucceeded = true;
         }
         catch (error) {
-            result.error =
+            result.error = error instanceof Error ?
                 {
-                    type: typeof error,
-                    text: error.toString()
-                };
+                    name: error.name,
+                    message: error.message,
+                } :
+                error;
         }
         return result;
     };
@@ -149,7 +150,7 @@ var test;
     test.start = function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             _1.minamo.dom.appendChildren(document.body, [
-                { tag: "h1", children: "minamo.js test page" },
+                { tag: "h1", children: "💦 minamo.js test page" },
                 {
                     tag: "p",
                     children: [

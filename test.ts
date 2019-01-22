@@ -103,11 +103,12 @@ export module test
         }
         catch(error)
         {
-            result.error =
+            result.error = error instanceof Error ?
             {
-                type: typeof error,
-                text: error.toString()
-            };
+                name: error.name,
+                message: error.message,
+            }:
+            error;
         }
         return result;
     }
@@ -141,7 +142,7 @@ export module test
         (
             document.body,
             [
-                { tag : "h1", children : "minamo.js test page" },
+                { tag : "h1", children : "💦 minamo.js test page" },
                 {
                     tag: "p",
                     children:
