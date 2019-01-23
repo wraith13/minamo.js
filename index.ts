@@ -1,9 +1,11 @@
+
 export module minamo
 {
     export module core
     {
-        export const timeout = async (wait : number) : Promise<void> => new Promise<void>(resolve => setTimeout(resolve, wait));
-        export const tryOrThrough = function(title : string, f : () => void) : void
+        export const timeout = async (wait: number): Promise<void> =>
+            new Promise<void>(resolve => setTimeout(resolve, wait));
+        export const tryOrThrough = function(title: string, f: () => void): void
         {
             try
             {
@@ -14,7 +16,7 @@ export module minamo
                 console.error(`🚫 ${title}: ${err}`);
             }
         };
-        export const tryOrThroughAsync = async function(title : string, f : () => Promise<void>) : Promise<void>
+        export const tryOrThroughAsync = async function(title: string, f: () => Promise<void>): Promise<void>
         {
             try
             {
@@ -25,8 +27,8 @@ export module minamo
                 console.error(`🚫 ${title}: ${err}`);
             }
         };
-        export const simpleDeepCopy = (source : object) : object => JSON.parse(JSON.stringify(source));
-        export const recursiveAssign = (target : object, source : object) : void => objectForEach
+        export const simpleDeepCopy = (source: object): object => JSON.parse(JSON.stringify(source));
+        export const recursiveAssign = (target: object, source: object): void => objectForEach
         (
             source,
             (key, value) =>
@@ -45,7 +47,7 @@ export module minamo
                 }
             }
         );
-        export const practicalTypeof = function(obj : any) : string
+        export const practicalTypeof = function(obj: any): string
         {
             if (undefined === obj)
             {
@@ -62,26 +64,34 @@ export module minamo
     
             return typeof obj;
         };
-        export const exists = (i : any) : boolean => undefined !== i && null !== i;
+        export const exists = (i: any): boolean => undefined !== i && null !== i;
+        export const existsOrThrow = <ValueT>(i: ValueT): ValueT =>
+        {
+            if (!exists(i))
+            {
+                throw new ReferenceError("existsOrThrow() encountered a unexist value.");
+            }
+            return i;
+        }
         export class Url
         {
-            constructor(private url : string)
+            constructor(private url: string)
             {
             }
 
-            rawParams : {[key:string]:string} = null;
+            rawParams: {[key:string]:string} = null;
 
-            set = (url : string) =>
+            set = (url: string) =>
             {
                 this.url = url;
                 this.rawParams = null;
                 return this;
             }
 
-            getWithoutParams = () : string => separateAndHead(this.url, "?");
+            getWithoutParams = (): string => separate(this.url, "?").head;
 
-            getRawParamsString = () : string => separateAndTail(this.url, "?");
-            getRawParams = () : {[key:string]:string} =>
+            getRawParamsString = (): string => separate(this.url, "?").tail;
+            getRawParams = (): {[key:string]:string} =>
             {
                 if (!this.rawParams)
                 {
@@ -98,62 +108,67 @@ export module minamo
                 }
                 return this.rawParams;
             }
-            getParam = (key : string) : string => decodeURIComponent(this.getRawParams()[key]);
+            getParam = (key: string): string => decodeURIComponent(this.getRawParams()[key]);
 
-            private updateParams = () => this.setRawParamsString(objectToArray(this.rawParams, (k, v) => bond(k, "=", v)).join("&"));
+            private updateParams = () => this.setRawParamsString
+            (
+                objectToArray(this.rawParams, (k, v) => bond(k, "=", v))
+                    .join("&")
+            );
 
-            setRawParamsString = (rawParamsString : string) =>
+            setRawParamsString = (rawParamsString: string) =>
             {
                 this.url = bond(this.getWithoutParams(), "?", rawParamsString);
                 return this;
             }
-            setRawParam = (key : string, rawValue : string) =>
+            setRawParam = (key: string, rawValue: string) =>
             {
                 this.getRawParams()[key] = rawValue;
                 return this.updateParams();
             }
-            setParam = (key : string, value : string) => this.setRawParam(key, encodeURIComponent(value));
-            setRawParams = (params : {[key:string]:string}) =>
+            setParam = (key: string, value: string) => this.setRawParam(key, encodeURIComponent(value));
+            setRawParams = (params: {[key:string]:string}) =>
             {
                 this.rawParams = params;
                 return this.updateParams();
             }
-            setParams = (params : {[key:string]:string}) => this.setRawParams(objectMap(params, (_key, value) => encodeURIComponent(value)));
+            setParams = (params: {[key:string]:string}) =>
+                this.setRawParams(objectMap(params, (_key, value) => encodeURIComponent(value)));
 
             toString = ()=> this.url;
         }
         export class Listener<ValueT>
         {
-            private members : ((value : ValueT, options? : { [key:string] : any }) => Promise<void>)[] = [];
-            push = (member : (value : ValueT, options? : { [key:string] : any }) => Promise<void>) : Listener<ValueT> =>
+            private members: ((value: ValueT, options?: { [key:string]: any }) => Promise<void>)[] = [];
+            push = (member: (value: ValueT, options?: { [key:string]: any }) => Promise<void>): Listener<ValueT> =>
             {
                 this.members.push(member);
                 return this;
             };
-            remove = (member : (value : ValueT, options? : { [key:string] : any }) => Promise<void>) : Listener<ValueT> =>
+            remove = (member: (value: ValueT, options?: { [key:string]: any }) => Promise<void>): Listener<ValueT> =>
             {
                 this.members = this.members.filter(i => member !== i);
                 return this;
             };
-            clear = () : Listener<ValueT> =>
+            clear = (): Listener<ValueT> =>
             {
                 this.members = [];
                 return this;
             }
-            fireAsync = async (value : ValueT, options? : { }) : Promise<void> =>
+            fireAsync = async (value: ValueT, options?: { }): Promise<void> =>
             {
                 await Promise.all(this.members.map(async i => await i(value, options)));
             };
         };
         export class Property<ValueT>
         {
-            constructor(private updater? : () => Promise<ValueT>) { }
-            private value : ValueT = null;
+            constructor(private updater?: () => Promise<ValueT>) { }
+            private value: ValueT = null;
             onUpdate = new Listener<Property<ValueT>>();
             onUpdateOnce = new Listener<Property<ValueT>>();
-            exists = () : boolean => exists(this.value);
-            get = () : ValueT => this.value;
-            setAsync = async (value : ValueT, options? : { }) : Promise<ValueT> =>
+            exists = (): boolean => exists(this.value);
+            get = (): ValueT => this.value;
+            setAsync = async (value: ValueT, options?: { }): Promise<ValueT> =>
             {
                 if (this.value !== value)
                 {
@@ -164,38 +179,67 @@ export module minamo
                 }
                 return value;
             }
-            updateAsync = async () : Promise<ValueT> => await this.setAsync(await this.updater());
-            getOrUpdateAsync = async () : Promise<ValueT> => this.exists() ? this.get(): await this.updateAsync();
+            updateAsync = async (): Promise<ValueT> => await this.setAsync(await this.updater());
+            getOrUpdateAsync = async (): Promise<ValueT> => this.exists() ? this.get(): await this.updateAsync();
         }
-        export const getOrCall = <ValueT>(i : ValueT | (() => ValueT)) : ValueT => "function" === typeof i ? (<() => ValueT>i)(): i; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
-        export const getOrCallAsync = async <ValueT>(i : ValueT | (() => Promise<ValueT>)) : Promise<ValueT> => "function" === typeof i ? await (<() => Promise<ValueT>>i)(): i; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
-        export const getLast = <ValutT>(i : ValutT[]) : ValutT => i[i.length - 1];
-        export const arrayOrToArray = <ValueT>(i : ValueT | ValueT[]) : ValueT[] => Array.isArray(i) ? i: [i];
-        export const flatMap = <ValueT, ResultT>(source : ValueT | ValueT[], mapFunction : (value : ValueT) => ResultT[]) : ResultT[] =>
+        export const getOrCall = <ValueT>(i: ValueT | (() => ValueT)): ValueT =>
+            "function" === typeof i ?
+                (<() => ValueT>i)():
+                i; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
+        export const getOrCallAsync = async <ValueT>(i: ValueT | (() => Promise<ValueT>)): Promise<ValueT> =>
+            "function" === typeof i ?
+                await (<() => Promise<ValueT>>i)():
+                i; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
+        export const getLast = <ValutT>(i: ValutT[]): ValutT => i[i.length - 1];
+        export const arrayOrToArray = <ValueT>(x: ValueT | ValueT[]): ValueT[] => Array.isArray(x) ? x: [x];
+        export const singleOrArray = <ValueT>
+        (
+            x: ValueT | ValueT[],
+            singleFunction: (i: ValueT) => void,
+            arrayFunction: (a: ValueT[]) => void
+        ): void => Array.isArray(x) ? arrayFunction(x): singleFunction(x);
+
+        export const flatMap = <ValueT, ResultT>
+        (
+            source: ValueT | ValueT[],
+            mapFunction: (value: ValueT) => ResultT[]
+        ): ResultT[] =>
         {
-            let result : ResultT[] = [];
+            let result: ResultT[] = [];
             core.arrayOrToArray(source).forEach
             (
                 i => result = result.concat(mapFunction(i))
             );
             return result;
         };
-        export const objectForEach = (source : {[key:string]:any}, eachFunction : (key : string, value : any, object : {[key:string]:any}) => void) : void =>
+        export const objectForEach =
+        (
+            source: {[key:string]:any},
+            eachFunction: (key: string, value: any, object: {[key:string]:any}) => void
+        ): void =>
         {
             Object.keys(source).forEach
             (
                 key => eachFunction(key, source[key], source)
             );
         };
-        export const objectMap = (source : {[key:string]:any}, mapFunction : (key : string, value : any, object : {[key:string]:any}) => any) : {[key:string]:any} =>
+        export const objectMap =
+        (
+            source: {[key:string]:any},
+            mapFunction: (key: string, value: any, object: {[key:string]:any}) => any
+        ): {[key:string]:any} =>
         {
-            const result : {[key:string]:any} = { };
+            const result: {[key:string]:any} = { };
             objectForEach(source, key => result[key] = mapFunction(key, source[key], source));
             return result;
         };
-        export const objectFilter = (source : {[key:string]:any}, filterFunction : (key : string, value : any, object : {[key:string]:any}) => boolean) : {[key:string]:any} =>
+        export const objectFilter =
+        (
+            source: {[key:string]:any},
+            filterFunction: (key: string, value: any, object: {[key:string]:any}) => boolean
+        ): {[key:string]:any} =>
         {
-            const result : {[key:string]:any} = { };
+            const result: {[key:string]:any} = { };
             objectForEach
             (
                 source,
@@ -210,24 +254,18 @@ export module minamo
             );
             return result;
         };
-        export const objectToArray = <ResultT>(source : {[key:string]:any}, mapFunction : (key : string, value : any, object : {[key:string]:any}) => ResultT) : ResultT[] =>
+        export const objectToArray = <ResultT>
+        (
+            source: {[key:string]:any},
+            mapFunction: (key: string, value: any, object: {[key:string]:any}) => ResultT
+        ): ResultT[] =>
         {
-            const result : ResultT[] = [ ];
+            const result: ResultT[] = [ ];
             objectForEach(source, (key, value) => result.push(mapFunction(key, value, source)));
             return result;
         };
 
-        export const separateAndHead = (text : string, separator : string) : string =>
-        {
-            const index = text.indexOf(separator);
-            return 0 <= index ? text.substring(0, index): text;
-        }
-        export const separateAndTail = (text : string, separator : string) : string =>
-        {
-            const index = text.indexOf(separator);
-            return 0 <= index ? text.substring(index +separator.length): "";
-        }
-        export const separate = (text : string, separator : string) : { head : string, tail : string } =>
+        export const separate = (text: string, separator: string): { head: string, tail: string } =>
         {
             const index = text.indexOf(separator);
             return 0 <= index ?
@@ -240,13 +278,34 @@ export module minamo
                 tail: null,
             };
         }
-        export const bond = (head : string, separator : string, tail : string) => exists(tail) ? `${head}${separator}${tail}`: head;
+        export const bond = (head: string, separator: string, tail: string) =>
+            exists(tail) ?
+                `${existsOrThrow(head)}${existsOrThrow(separator)}${tail}`:
+                existsOrThrow(head);
+        export const countMap = <ValueT>(mapFunction: (index: number, result: ValueT[]) => ValueT | null) =>
+        {
+            const result: ValueT[] = [];
+            let index = 0;
+            while(true)
+            {
+                const current = mapFunction(index, result);
+                if (exists(current))
+                {
+                    result.push(current);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return result;
+        };
     }
     export module cookie
     {
         export let defaultMaxAge = 30 * 24 * 60 * 60;
-        let cache : {[key:string]:string} = null;
-        export const setRaw = (key : string, value : string, maxAge? : number) : string =>
+        let cache: {[key:string]:string} = null;
+        export const setRaw = (key: string, value: string, maxAge?: number): string =>
         {
             document.cookie = core.exists(maxAge)  ?
                 `${key}=${value}; max-age=${maxAge}`:
@@ -254,18 +313,18 @@ export module minamo
             cacheOrUpdate()[key] = value;
             return value;
         };
-        export const set = <ValueT>(key : string, value : ValueT, maxAge : number = defaultMaxAge) : ValueT =>
+        export const set = <ValueT>(key: string, value: ValueT, maxAge: number = defaultMaxAge): ValueT =>
         {
             set(key, encodeURIComponent(JSON.stringify(value)), maxAge);
             return value;
         };
-        export const setAsTemporary = <ValueT>(key : string, value : ValueT) : ValueT => set(key, value, null);
-        export const setAsDaily = <ValueT>(key : string, value : ValueT) : ValueT => set(key, value, 24 * 60 * 60);
-        export const setAsWeekly = <ValueT>(key : string, value : ValueT) : ValueT => set(key, value, 7 * 24 * 60 * 60);
-        export const setAsMonthly = <ValueT>(key : string, value : ValueT) : ValueT => set(key, value, 30 * 24 * 60 * 60);
-        export const setAsAnnually = <ValueT>(key : string, value : ValueT) : ValueT => set(key, value, 365 * 24 * 60 * 60);
-        export const remove = (key : string) => setRaw(key, null, 0);
-        export const update = () : {[key:string]:string} =>
+        export const setAsTemporary = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, null);
+        export const setAsDaily = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, 24 * 60 * 60);
+        export const setAsWeekly = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, 7 * 24 * 60 * 60);
+        export const setAsMonthly = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, 30 * 24 * 60 * 60);
+        export const setAsAnnually = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, 365 * 24 * 60 * 60);
+        export const remove = (key: string) => setRaw(key, null, 0);
+        export const update = (): {[key:string]:string} =>
         {
             cache = { };
             document.cookie
@@ -281,21 +340,21 @@ export module minamo
                 );
             return cache;
         };
-        export const cacheOrUpdate = () : {[key:string]:string} => cache || update();
-        export const getRaw = (key : string) : string => cacheOrUpdate()[key];
-        export const getOrNull = <ValueT>(key : string) : ValueT => core.exists(getRaw(key)) ? <ValueT>JSON.parse(decodeURIComponent(cache[key])): null;
+        export const cacheOrUpdate = (): {[key:string]:string} => cache || update();
+        export const getRaw = (key: string): string => cacheOrUpdate()[key];
+        export const getOrNull = <ValueT>(key: string): ValueT => core.exists(getRaw(key)) ? <ValueT>JSON.parse(decodeURIComponent(cache[key])): null;
 
         export class Property<ValueT> extends core.Property<ValueT>
         {
-            private key : string | (() => string);
-            private maxAge? : number;
+            private key: string | (() => string);
+            private maxAge?: number;
             constructor
             (
                 params :
                 {
-                    key : string | (() => string),
-                    updater? : () => Promise<ValueT>,
-                    maxAge? : number,
+                    key: string | (() => string),
+                    updater?: () => Promise<ValueT>,
+                    maxAge?: number,
                 }
             )
             {
@@ -303,13 +362,17 @@ export module minamo
                 this.key = params.key;
                 this.maxAge = params.maxAge;
             }
-            save = () : Property<ValueT> =>
+            save = (): Property<ValueT> =>
             {
                 cookie.set(core.getOrCall(this.key), this.get(), this.maxAge);
                 return this;
             }
-            loadAsync = async () : Promise<ValueT> => await this.setAsync(cookie.getOrNull(core.getOrCall(this.key)), { onLoadAsync: true });
-            loadOrUpdateAsync = async () : Promise<ValueT> =>
+            loadAsync = async (): Promise<ValueT> => await this.setAsync
+            (
+                cookie.getOrNull(core.getOrCall(this.key)),
+                { onLoadAsync: true }
+            );
+            loadOrUpdateAsync = async (): Promise<ValueT> =>
             {
                 let result = await this.loadAsync();
                 if (!core.exists(result))
@@ -325,16 +388,16 @@ export module minamo
             (
                 params :
                 {
-                    key : string | (() => string),
-                    updater? : () => Promise<ValueT>,
-                    maxAge? : number,
+                    key: string | (() => string),
+                    updater?: () => Promise<ValueT>,
+                    maxAge?: number,
                 }
             )
             {
                 super(params);
                 this.onUpdate.push
                 (
-                    async (_value : Property<ValueT>, options? : { [key:string] : any }) : Promise<void> =>
+                    async (_value: Property<ValueT>, options?: { [key:string]: any }): Promise<void> =>
                     {
                         if (!options || !options.onLoadAsync)
                         {
@@ -347,7 +410,7 @@ export module minamo
     }
     export module dom
     {
-        export const make = (arg : any) : Node =>
+        export const make = (arg: any): Node =>
         {
             if (arg instanceof Node)
             {
@@ -359,7 +422,7 @@ export module minamo
             }
             return setToElement(document.createElement(arg.tag), arg);
         };
-        export const setToElement = (element : Element, arg : any) : Node =>
+        export const setToElement = (element: Element, arg: any): Node =>
         {
             core.objectForEach
             (
@@ -398,7 +461,7 @@ export module minamo
             }
             if (undefined !== arg.children)
             {
-                core.arrayOrToArray(arg.children).forEach((i : any) => element.appendChild(make(i)));
+                core.arrayOrToArray(arg.children).forEach((i: any) => element.appendChild(make(i)));
             }
             if (undefined !== arg.eventListener)
             {
@@ -410,8 +473,8 @@ export module minamo
             }
             return element;
         };
-        export const remove = (node : Node) : Node => node.parentNode.removeChild(node);
-        export const removeChildren = (parent : Element, isRemoveChild? : (child : Node) => boolean) : Element =>
+        export const remove = (node: Node): Node => node.parentNode.removeChild(node);
+        export const removeChildren = (parent: Element, isRemoveChild?: (child: Node) => boolean): Element =>
         {
             if (isRemoveChild)
             {
@@ -432,19 +495,25 @@ export module minamo
             }
             return parent;
         };
-        export const appendChildren = (parent : Element, newChildren : any, refChild? : Node) : Element =>
+        export const appendChildren = (parent: Element, newChildren: any, refChild?: Node): Element =>
         {
-            if (undefined === refChild)
-            {
-                core.arrayOrToArray(newChildren).forEach((i : any) => parent.appendChild(make(i)));
-            }
-            else
-            {
-                core.arrayOrToArray(newChildren).forEach((i : any) => parent.insertBefore(make(i), refChild));
-            }
+            core.singleOrArray
+            (
+                newChildren,
+                i => undefined === refChild ?
+                    parent.appendChild(make(i)):
+                    parent.insertBefore(make(i), refChild),
+                a => a.forEach(i => appendChildren(parent, i, refChild))
+            );
             return parent;
         };
-        export const replaceChildren = (parent : Element, newChildren : any, isRemoveChild? : (child : Node) => boolean, refChild? : Node) : Element =>
+        export const replaceChildren =
+        (
+            parent: Element,
+            newChildren: any,
+            isRemoveChild?: (child: Node) => boolean,
+            refChild?: Node
+        ): Element =>
         {
             removeChildren(parent, isRemoveChild);
             appendChildren(parent, newChildren, refChild);

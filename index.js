@@ -109,6 +109,12 @@ var minamo;
             return typeof obj;
         };
         core.exists = function (i) { return undefined !== i && null !== i; };
+        core.existsOrThrow = function (i) {
+            if (!core.exists(i)) {
+                throw new ReferenceError("existsOrThrow() encountered a unexist value.");
+            }
+            return i;
+        };
         var Url = /** @class */ (function () {
             function Url(url) {
                 var _this = this;
@@ -119,8 +125,8 @@ var minamo;
                     _this.rawParams = null;
                     return _this;
                 };
-                this.getWithoutParams = function () { return core.separateAndHead(_this.url, "?"); };
-                this.getRawParamsString = function () { return core.separateAndTail(_this.url, "?"); };
+                this.getWithoutParams = function () { return core.separate(_this.url, "?").head; };
+                this.getRawParamsString = function () { return core.separate(_this.url, "?").tail; };
                 this.getRawParams = function () {
                     if (!_this.rawParams) {
                         _this.rawParams = {};
@@ -133,7 +139,8 @@ var minamo;
                     return _this.rawParams;
                 };
                 this.getParam = function (key) { return decodeURIComponent(_this.getRawParams()[key]); };
-                this.updateParams = function () { return _this.setRawParamsString(core.objectToArray(_this.rawParams, function (k, v) { return core.bond(k, "=", v); }).join("&")); };
+                this.updateParams = function () { return _this.setRawParamsString(core.objectToArray(_this.rawParams, function (k, v) { return core.bond(k, "=", v); })
+                    .join("&")); };
                 this.setRawParamsString = function (rawParamsString) {
                     _this.url = core.bond(_this.getWithoutParams(), "?", rawParamsString);
                     return _this;
@@ -147,7 +154,9 @@ var minamo;
                     _this.rawParams = params;
                     return _this.updateParams();
                 };
-                this.setParams = function (params) { return _this.setRawParams(core.objectMap(params, function (_key, value) { return encodeURIComponent(value); })); };
+                this.setParams = function (params) {
+                    return _this.setRawParams(core.objectMap(params, function (_key, value) { return encodeURIComponent(value); }));
+                };
                 this.toString = function () { return _this.url; };
             }
             return Url;
@@ -243,23 +252,31 @@ var minamo;
             return Property;
         }());
         core.Property = Property;
-        core.getOrCall = function (i) { return "function" === typeof i ? i() : i; }; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
-        core.getOrCallAsync = function (i) { return __awaiter(_this, void 0, void 0, function () { var _a; return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    if (!("function" === typeof i)) return [3 /*break*/, 2];
-                    return [4 /*yield*/, i()];
-                case 1:
-                    _a = _b.sent();
-                    return [3 /*break*/, 3];
-                case 2:
-                    _a = i;
-                    _b.label = 3;
-                case 3: return [2 /*return*/, _a];
-            }
-        }); }); }; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
+        core.getOrCall = function (i) {
+            return "function" === typeof i ?
+                i() :
+                i;
+        }; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
+        core.getOrCallAsync = function (i) { return __awaiter(_this, void 0, void 0, function () {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (!("function" === typeof i)) return [3 /*break*/, 2];
+                        return [4 /*yield*/, i()];
+                    case 1:
+                        _a = _b.sent();
+                        return [3 /*break*/, 3];
+                    case 2:
+                        _a = i;
+                        _b.label = 3;
+                    case 3: return [2 /*return*/, _a];
+                }
+            });
+        }); }; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
         core.getLast = function (i) { return i[i.length - 1]; };
-        core.arrayOrToArray = function (i) { return Array.isArray(i) ? i : [i]; };
+        core.arrayOrToArray = function (x) { return Array.isArray(x) ? x : [x]; };
+        core.singleOrArray = function (x, singleFunction, arrayFunction) { return Array.isArray(x) ? arrayFunction(x) : singleFunction(x); };
         core.flatMap = function (source, mapFunction) {
             var result = [];
             core.arrayOrToArray(source).forEach(function (i) { return result = result.concat(mapFunction(i)); });
@@ -288,14 +305,6 @@ var minamo;
             core.objectForEach(source, function (key, value) { return result.push(mapFunction(key, value, source)); });
             return result;
         };
-        core.separateAndHead = function (text, separator) {
-            var index = text.indexOf(separator);
-            return 0 <= index ? text.substring(0, index) : text;
-        };
-        core.separateAndTail = function (text, separator) {
-            var index = text.indexOf(separator);
-            return 0 <= index ? text.substring(index + separator.length) : "";
-        };
         core.separate = function (text, separator) {
             var index = text.indexOf(separator);
             return 0 <= index ?
@@ -308,7 +317,25 @@ var minamo;
                     tail: null,
                 };
         };
-        core.bond = function (head, separator, tail) { return core.exists(tail) ? "" + head + separator + tail : head; };
+        core.bond = function (head, separator, tail) {
+            return core.exists(tail) ?
+                "" + core.existsOrThrow(head) + core.existsOrThrow(separator) + tail :
+                core.existsOrThrow(head);
+        };
+        core.countMap = function (mapFunction) {
+            var result = [];
+            var index = 0;
+            while (true) {
+                var current = mapFunction(index, result);
+                if (core.exists(current)) {
+                    result.push(current);
+                }
+                else {
+                    break;
+                }
+            }
+            return result;
+        };
     })(core = minamo.core || (minamo.core = {}));
     var cookie;
     (function (cookie) {
@@ -354,12 +381,14 @@ var minamo;
                     cookie.set(core.getOrCall(_this.key), _this.get(), _this.maxAge);
                     return _this;
                 };
-                _this.loadAsync = function () { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, this.setAsync(cookie.getOrNull(core.getOrCall(this.key)), { onLoadAsync: true })];
-                        case 1: return [2 /*return*/, _a.sent()];
-                    }
-                }); }); };
+                _this.loadAsync = function () { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.setAsync(cookie.getOrNull(core.getOrCall(this.key)), { onLoadAsync: true })];
+                            case 1: return [2 /*return*/, _a.sent()];
+                        }
+                    });
+                }); };
                 _this.loadOrUpdateAsync = function () { return __awaiter(_this, void 0, void 0, function () {
                     var result;
                     return __generator(this, function (_a) {
@@ -464,12 +493,9 @@ var minamo;
             return parent;
         };
         dom.appendChildren = function (parent, newChildren, refChild) {
-            if (undefined === refChild) {
-                core.arrayOrToArray(newChildren).forEach(function (i) { return parent.appendChild(dom.make(i)); });
-            }
-            else {
-                core.arrayOrToArray(newChildren).forEach(function (i) { return parent.insertBefore(dom.make(i), refChild); });
-            }
+            core.singleOrArray(newChildren, function (i) { return undefined === refChild ?
+                parent.appendChild(dom.make(i)) :
+                parent.insertBefore(dom.make(i), refChild); }, function (a) { return a.forEach(function (i) { return dom.appendChildren(parent, i, refChild); }); });
             return parent;
         };
         dom.replaceChildren = function (parent, newChildren, isRemoveChild, refChild) {
