@@ -336,6 +336,12 @@ var minamo;
             }
             return result;
         };
+        core.runLengthString = function (unit, length) {
+            return core.countMap(function (i) { return i < length ? unit : null; }).join("");
+        };
+        core.zeroPadding = function (length, n) {
+            return ("" + core.runLengthString("0", length - 1) + n).substr(-length);
+        };
     })(core = minamo.core || (minamo.core = {}));
     var cookie;
     (function (cookie) {
@@ -350,7 +356,7 @@ var minamo;
         };
         cookie.set = function (key, value, maxAge) {
             if (maxAge === void 0) { maxAge = cookie.defaultMaxAge; }
-            cookie.set(key, encodeURIComponent(JSON.stringify(value)), maxAge);
+            cookie.setRaw(key, encodeURIComponent(JSON.stringify(value)), maxAge);
             return value;
         };
         cookie.setAsTemporary = function (key, value) { return cookie.set(key, value, null); };
@@ -372,7 +378,9 @@ var minamo;
         };
         cookie.cacheOrUpdate = function () { return cache || cookie.update(); };
         cookie.getRaw = function (key) { return cookie.cacheOrUpdate()[key]; };
-        cookie.getOrNull = function (key) { return core.exists(cookie.getRaw(key)) ? JSON.parse(decodeURIComponent(cache[key])) : null; };
+        cookie.getOrNull = function (key) {
+            return core.exists(cookie.getRaw(key)) ? JSON.parse(decodeURIComponent(cache[key])) : null;
+        };
         var Property = /** @class */ (function (_super) {
             __extends(Property, _super);
             function Property(params) {
@@ -430,6 +438,150 @@ var minamo;
         }(Property));
         cookie.AutoSaveProperty = AutoSaveProperty;
     })(cookie = minamo.cookie || (minamo.cookie = {}));
+    var localStorage;
+    (function (localStorage) {
+        localStorage.setRaw = function (key, value) {
+            window.localStorage.setItem(key, value);
+            return value;
+        };
+        localStorage.set = function (key, value) {
+            localStorage.setRaw(key, encodeURIComponent(JSON.stringify(value)));
+            return value;
+        };
+        localStorage.remove = function (key) { return window.localStorage.removeItem(key); };
+        localStorage.getRaw = function (key) { return window.localStorage.getItem(key); };
+        localStorage.getOrNull = function (key) {
+            var rawValue = localStorage.getRaw(key);
+            return core.exists(rawValue) ? JSON.parse(decodeURIComponent(rawValue)) : null;
+        };
+        var Property = /** @class */ (function (_super) {
+            __extends(Property, _super);
+            function Property(params) {
+                var _this = _super.call(this, params.updater) || this;
+                _this.save = function () {
+                    cookie.set(core.getOrCall(_this.key), _this.get());
+                    return _this;
+                };
+                _this.loadAsync = function () { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.setAsync(cookie.getOrNull(core.getOrCall(this.key)), { onLoadAsync: true })];
+                            case 1: return [2 /*return*/, _a.sent()];
+                        }
+                    });
+                }); };
+                _this.loadOrUpdateAsync = function () { return __awaiter(_this, void 0, void 0, function () {
+                    var result;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.loadAsync()];
+                            case 1:
+                                result = _a.sent();
+                                if (!!core.exists(result)) return [3 /*break*/, 3];
+                                return [4 /*yield*/, this.updateAsync()];
+                            case 2:
+                                result = _a.sent();
+                                _a.label = 3;
+                            case 3: return [2 /*return*/, result];
+                        }
+                    });
+                }); };
+                _this.key = params.key;
+                return _this;
+            }
+            return Property;
+        }(core.Property));
+        localStorage.Property = Property;
+        var AutoSaveProperty = /** @class */ (function (_super) {
+            __extends(AutoSaveProperty, _super);
+            function AutoSaveProperty(params) {
+                var _this = _super.call(this, params) || this;
+                _this.onUpdate.push(function (_value, options) { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        if (!options || !options.onLoadAsync) {
+                            this.save();
+                        }
+                        return [2 /*return*/];
+                    });
+                }); });
+                return _this;
+            }
+            return AutoSaveProperty;
+        }(Property));
+        localStorage.AutoSaveProperty = AutoSaveProperty;
+    })(localStorage = minamo.localStorage || (minamo.localStorage = {}));
+    var sessionStorage;
+    (function (sessionStorage) {
+        sessionStorage.setRaw = function (key, value) {
+            window.sessionStorage.setItem(key, value);
+            return value;
+        };
+        sessionStorage.set = function (key, value) {
+            sessionStorage.setRaw(key, encodeURIComponent(JSON.stringify(value)));
+            return value;
+        };
+        sessionStorage.remove = function (key) { return window.sessionStorage.removeItem(key); };
+        sessionStorage.getRaw = function (key) { return window.sessionStorage.getItem(key); };
+        sessionStorage.getOrNull = function (key) {
+            var rawValue = sessionStorage.getRaw(key);
+            return core.exists(rawValue) ? JSON.parse(decodeURIComponent(rawValue)) : null;
+        };
+        var Property = /** @class */ (function (_super) {
+            __extends(Property, _super);
+            function Property(params) {
+                var _this = _super.call(this, params.updater) || this;
+                _this.save = function () {
+                    cookie.set(core.getOrCall(_this.key), _this.get());
+                    return _this;
+                };
+                _this.loadAsync = function () { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.setAsync(cookie.getOrNull(core.getOrCall(this.key)), { onLoadAsync: true })];
+                            case 1: return [2 /*return*/, _a.sent()];
+                        }
+                    });
+                }); };
+                _this.loadOrUpdateAsync = function () { return __awaiter(_this, void 0, void 0, function () {
+                    var result;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.loadAsync()];
+                            case 1:
+                                result = _a.sent();
+                                if (!!core.exists(result)) return [3 /*break*/, 3];
+                                return [4 /*yield*/, this.updateAsync()];
+                            case 2:
+                                result = _a.sent();
+                                _a.label = 3;
+                            case 3: return [2 /*return*/, result];
+                        }
+                    });
+                }); };
+                _this.key = params.key;
+                return _this;
+            }
+            return Property;
+        }(core.Property));
+        sessionStorage.Property = Property;
+        var AutoSaveProperty = /** @class */ (function (_super) {
+            __extends(AutoSaveProperty, _super);
+            function AutoSaveProperty(params) {
+                var _this = _super.call(this, params) || this;
+                _this.onUpdate.push(function (_value, options) { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        if (!options || !options.onLoadAsync) {
+                            this.save();
+                        }
+                        return [2 /*return*/];
+                    });
+                }); });
+                return _this;
+            }
+            return AutoSaveProperty;
+        }(Property));
+        sessionStorage.AutoSaveProperty = AutoSaveProperty;
+    })(sessionStorage = minamo.sessionStorage || (minamo.sessionStorage = {}));
     var dom;
     (function (dom) {
         dom.make = function (arg) {
@@ -439,9 +591,9 @@ var minamo;
             if ("string" === core.practicalTypeof(arg)) {
                 return document.createTextNode(arg);
             }
-            return dom.setToElement(document.createElement(arg.tag), arg);
+            return dom.set(document.createElement(arg.tag), arg);
         };
-        dom.setToElement = function (element, arg) {
+        dom.set = function (element, arg) {
             core.objectForEach(arg, function (key, value) {
                 switch (key) {
                     case "tag":

@@ -300,6 +300,10 @@ export module minamo
             }
             return result;
         };
+        export const runLengthString = (unit: string, length: number): string =>
+            countMap(i => i < length ? unit: null).join("");
+        export const zeroPadding = (length: number, n: number): string =>
+            `${runLengthString("0", length -1)}${n}`.substr(-length);
     }
     export module cookie
     {
@@ -315,7 +319,7 @@ export module minamo
         };
         export const set = <ValueT>(key: string, value: ValueT, maxAge: number = defaultMaxAge): ValueT =>
         {
-            set(key, encodeURIComponent(JSON.stringify(value)), maxAge);
+            setRaw(key, encodeURIComponent(JSON.stringify(value)), maxAge);
             return value;
         };
         export const setAsTemporary = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, null);
@@ -342,7 +346,8 @@ export module minamo
         };
         export const cacheOrUpdate = (): {[key:string]:string} => cache || update();
         export const getRaw = (key: string): string => cacheOrUpdate()[key];
-        export const getOrNull = <ValueT>(key: string): ValueT => core.exists(getRaw(key)) ? <ValueT>JSON.parse(decodeURIComponent(cache[key])): null;
+        export const getOrNull = <ValueT>(key: string): ValueT =>
+            core.exists(getRaw(key)) ? <ValueT>JSON.parse(decodeURIComponent(cache[key])): null;
 
         export class Property<ValueT> extends core.Property<ValueT>
         {
@@ -408,6 +413,173 @@ export module minamo
             }
         }
     }
+
+    export module localStorage
+    {
+        export const setRaw = (key: string, value: string): string =>
+        {
+            window.localStorage.setItem(key, value);
+            return value;
+        };
+        export const set = <ValueT>(key: string, value: ValueT): ValueT =>
+        {
+            setRaw(key, encodeURIComponent(JSON.stringify(value)));
+            return value;
+        };
+        export const remove = (key: string) => window.localStorage.removeItem(key);
+        export const getRaw = (key: string): string => window.localStorage.getItem(key);
+
+        export const getOrNull = <ValueT>(key: string): ValueT =>
+        {
+            const rawValue = getRaw(key);
+            return  core.exists(rawValue) ? <ValueT>JSON.parse(decodeURIComponent(rawValue)): null;
+        }
+
+        export class Property<ValueT> extends core.Property<ValueT>
+        {
+            private key: string | (() => string);
+            constructor
+            (
+                params :
+                {
+                    key: string | (() => string),
+                    updater?: () => Promise<ValueT>
+                }
+            )
+            {
+                super(params.updater);
+                this.key = params.key;
+            }
+            save = (): Property<ValueT> =>
+            {
+                cookie.set(core.getOrCall(this.key), this.get());
+                return this;
+            }
+            loadAsync = async (): Promise<ValueT> => await this.setAsync
+            (
+                cookie.getOrNull(core.getOrCall(this.key)),
+                { onLoadAsync: true }
+            );
+            loadOrUpdateAsync = async (): Promise<ValueT> =>
+            {
+                let result = await this.loadAsync();
+                if (!core.exists(result))
+                {
+                    result = await this.updateAsync();
+                }
+                return result;
+            };
+        }
+        export class AutoSaveProperty<ValueT> extends Property<ValueT>
+        {
+            constructor
+            (
+                params :
+                {
+                    key: string | (() => string),
+                    updater?: () => Promise<ValueT>,
+                    maxAge?: number,
+                }
+            )
+            {
+                super(params);
+                this.onUpdate.push
+                (
+                    async (_value: Property<ValueT>, options?: { [key:string]: any }): Promise<void> =>
+                    {
+                        if (!options || !options.onLoadAsync)
+                        {
+                            this.save();
+                        }
+                    }
+                );
+            }
+        }
+    }
+    
+    export module sessionStorage
+    {
+        export const setRaw = (key: string, value: string): string =>
+        {
+            window.sessionStorage.setItem(key, value);
+            return value;
+        };
+        export const set = <ValueT>(key: string, value: ValueT): ValueT =>
+        {
+            setRaw(key, encodeURIComponent(JSON.stringify(value)));
+            return value;
+        };
+        export const remove = (key: string) => window.sessionStorage.removeItem(key);
+        export const getRaw = (key: string): string => window.sessionStorage.getItem(key);
+
+        export const getOrNull = <ValueT>(key: string): ValueT =>
+        {
+            const rawValue = getRaw(key);
+            return  core.exists(rawValue) ? <ValueT>JSON.parse(decodeURIComponent(rawValue)): null;
+        }
+
+        export class Property<ValueT> extends core.Property<ValueT>
+        {
+            private key: string | (() => string);
+            constructor
+            (
+                params :
+                {
+                    key: string | (() => string),
+                    updater?: () => Promise<ValueT>
+                }
+            )
+            {
+                super(params.updater);
+                this.key = params.key;
+            }
+            save = (): Property<ValueT> =>
+            {
+                cookie.set(core.getOrCall(this.key), this.get());
+                return this;
+            }
+            loadAsync = async (): Promise<ValueT> => await this.setAsync
+            (
+                cookie.getOrNull(core.getOrCall(this.key)),
+                { onLoadAsync: true }
+            );
+            loadOrUpdateAsync = async (): Promise<ValueT> =>
+            {
+                let result = await this.loadAsync();
+                if (!core.exists(result))
+                {
+                    result = await this.updateAsync();
+                }
+                return result;
+            };
+        }
+        export class AutoSaveProperty<ValueT> extends Property<ValueT>
+        {
+            constructor
+            (
+                params :
+                {
+                    key: string | (() => string),
+                    updater?: () => Promise<ValueT>,
+                    maxAge?: number,
+                }
+            )
+            {
+                super(params);
+                this.onUpdate.push
+                (
+                    async (_value: Property<ValueT>, options?: { [key:string]: any }): Promise<void> =>
+                    {
+                        if (!options || !options.onLoadAsync)
+                        {
+                            this.save();
+                        }
+                    }
+                );
+            }
+        }
+    }
+    
     export module dom
     {
         export const make = (arg: any): Node =>
@@ -420,9 +592,9 @@ export module minamo
             {
                 return document.createTextNode(arg);
             }
-            return setToElement(document.createElement(arg.tag), arg);
+            return set(document.createElement(arg.tag), arg);
         };
-        export const setToElement = (element: Element, arg: any): Node =>
+        export const set = (element: Element, arg: any): Node =>
         {
             core.objectForEach
             (
