@@ -30,7 +30,7 @@
     },
     "files": [
         "index.ts",
-        "test.ts"
+        "test/test.ts"
     ],
     "exclude": [
     ]

@@ -3,16 +3,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
     <meta name="theme-color" content="#000022">
-    <title>💦 minamo.js test page</title>
+    <title>💦 minamo.js test</title>
 
     <script type="text/javascript" src="https://wraith13.github.io/evil-commonjs/index.js"></script>
     <script>
     //  see https://github.com/wraith13/evil-commonjs
     module.readyToCapture();
     </script>
-    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="../index.js"></script>
     <script>
-    module.capture("index.js", ["."]);
+    module.capture("../index.js", [".."]);
     module.readyToCapture();
     </script>
     <script type="text/javascript" src="test.js"></script>
@@ -103,11 +103,13 @@
     table.details td:nth-child(3)
     {
         width: 45%;
+        word-break: break-all;
     }
     table.details th:nth-child(4),
     table.details td:nth-child(4)
     {
         width: 55%;
+        word-break: break-all;
     }
     </style>
 </head>

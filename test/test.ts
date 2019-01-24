@@ -1,4 +1,4 @@
-import { minamo } from ".";
+import { minamo } from "..";
 
 export module test
 {
@@ -34,7 +34,7 @@ export module test
                     [
                         {
                             tag : "th",
-                            children : "reulst",
+                            children : "result",
                         },
                         {
                             tag : "th",
@@ -142,12 +142,12 @@ export module test
         (
             document.body,
             [
-                { tag : "h1", children : "💦 minamo.js test page" },
+                { tag : "h1", children : document.title },
                 {
                     tag: "p",
                     children:
                     [
-                        "minamo.js is a necessary and sufficient and simple and compact JavaScript/TypeScript library.",
+                        "minamo.js is a necessary, sufficient, simple and compact JavaScript/TypeScript library.",
                         { tag: "a", className: "github", href:"https://github.com/wraith13/minamo.js", children: "GitHub", },
                     ],
                 },
@@ -178,32 +178,6 @@ export module test
                         equalTest(`minamo.core.separate("", "@")`, { head:"", tail:null }),
                         errorTest(`minamo.core.separate(null, "@")`),
                         equalTest(`minamo.core.separate("abc@def", null)`, { head:"abc@def", tail:null }),
-                    ]
-                ),
-                { tag : "h3", children : "minamo.core.separateAndHead" },
-                makeResultTable
-                (
-                    [
-                        equalTest(`minamo.core.separateAndHead("abc@def", "@")`, "abc"),
-                        equalTest(`minamo.core.separateAndHead("abc@", "@")`, "abc"),
-                        equalTest(`minamo.core.separateAndHead("@def", "@")`, ""),
-                        equalTest(`minamo.core.separateAndHead("abc", "@")`, "abc"),
-                        equalTest(`minamo.core.separateAndHead("", "@")`, ""),
-                        errorTest(`minamo.core.separateAndHead(null, "@")`),
-                        equalTest(`minamo.core.separateAndHead("abc@def", null)`, "abc@def"),
-                    ]
-                ),
-                { tag : "h3", children : "minamo.core.separateAndTail" },
-                makeResultTable
-                (
-                    [
-                        equalTest(`minamo.core.separateAndTail("abc@def", "@")`, "def"),
-                        equalTest(`minamo.core.separateAndTail("abc@", "@")`, ""),
-                        equalTest(`minamo.core.separateAndTail("@def", "@")`, "def"),
-                        equalTest(`minamo.core.separateAndTail("abc", "@")`, null),
-                        equalTest(`minamo.core.separateAndTail("", "@")`, null),
-                        errorTest(`minamo.core.separateAndTail(null, "@")`),
-                        equalTest(`minamo.core.separateAndTail("abc@def", null)`, null),
                     ]
                 ),
                 { tag : "h3", children : "minamo.core.bond" },
@@ -270,5 +244,9 @@ export module test
             },
             document.getElementsByTagName("h2")[1]
         )
+        if (counts.ng)
+        {
+            document.title = `(${counts.ng}) ${document.title}`
+        }
     };
 }

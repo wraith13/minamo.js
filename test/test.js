@@ -35,7 +35,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var _1 = require(".");
+var __1 = require("..");
 var test;
 (function (test) {
     var _this = this;
@@ -59,7 +59,7 @@ var test;
                     children: [
                         {
                             tag: "th",
-                            children: "reulst",
+                            children: "result",
                         },
                         {
                             tag: "th",
@@ -149,12 +149,12 @@ var test;
     };
     test.start = function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            _1.minamo.dom.appendChildren(document.body, [
-                { tag: "h1", children: "💦 minamo.js test page" },
+            __1.minamo.dom.appendChildren(document.body, [
+                { tag: "h1", children: document.title },
                 {
                     tag: "p",
                     children: [
-                        "minamo.js is a necessary and sufficient and simple and compact JavaScript/TypeScript library.",
+                        "minamo.js is a necessary, sufficient, simple and compact JavaScript/TypeScript library.",
                         { tag: "a", className: "github", href: "https://github.com/wraith13/minamo.js", children: "GitHub", },
                     ],
                 },
@@ -181,26 +181,6 @@ var test;
                     test.errorTest("minamo.core.separate(null, \"@\")"),
                     test.equalTest("minamo.core.separate(\"abc@def\", null)", { head: "abc@def", tail: null }),
                 ]),
-                { tag: "h3", children: "minamo.core.separateAndHead" },
-                makeResultTable([
-                    test.equalTest("minamo.core.separateAndHead(\"abc@def\", \"@\")", "abc"),
-                    test.equalTest("minamo.core.separateAndHead(\"abc@\", \"@\")", "abc"),
-                    test.equalTest("minamo.core.separateAndHead(\"@def\", \"@\")", ""),
-                    test.equalTest("minamo.core.separateAndHead(\"abc\", \"@\")", "abc"),
-                    test.equalTest("minamo.core.separateAndHead(\"\", \"@\")", ""),
-                    test.errorTest("minamo.core.separateAndHead(null, \"@\")"),
-                    test.equalTest("minamo.core.separateAndHead(\"abc@def\", null)", "abc@def"),
-                ]),
-                { tag: "h3", children: "minamo.core.separateAndTail" },
-                makeResultTable([
-                    test.equalTest("minamo.core.separateAndTail(\"abc@def\", \"@\")", "def"),
-                    test.equalTest("minamo.core.separateAndTail(\"abc@\", \"@\")", ""),
-                    test.equalTest("minamo.core.separateAndTail(\"@def\", \"@\")", "def"),
-                    test.equalTest("minamo.core.separateAndTail(\"abc\", \"@\")", null),
-                    test.equalTest("minamo.core.separateAndTail(\"\", \"@\")", null),
-                    test.errorTest("minamo.core.separateAndTail(null, \"@\")"),
-                    test.equalTest("minamo.core.separateAndTail(\"abc@def\", null)", null),
-                ]),
                 { tag: "h3", children: "minamo.core.bond" },
                 makeResultTable([
                     test.equalTest("minamo.core.bond(\"abc\", \"@\", \"def\")", "abc@def"),
@@ -213,7 +193,7 @@ var test;
                     test.errorTest("minamo.core.bond(\"abc\", null, \"def\")"),
                 ]),
             ]);
-            _1.minamo.dom.appendChildren(document.body, {
+            __1.minamo.dom.appendChildren(document.body, {
                 tag: "table",
                 className: "summary",
                 children: [
@@ -253,6 +233,9 @@ var test;
                     },
                 ],
             }, document.getElementsByTagName("h2")[1]);
+            if (counts.ng) {
+                document.title = "(" + counts.ng + ") " + document.title;
+            }
             return [2 /*return*/];
         });
     }); };
