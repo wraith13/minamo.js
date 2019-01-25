@@ -582,6 +582,48 @@ var minamo;
         }(Property));
         sessionStorage.AutoSaveProperty = AutoSaveProperty;
     })(sessionStorage = minamo.sessionStorage || (minamo.sessionStorage = {}));
+    var http;
+    (function (http) {
+        var _this = this;
+        http.request = function (method, url, body) { return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+            var request;
+            return __generator(this, function (_a) {
+                request = new XMLHttpRequest();
+                request.open(method, url, true);
+                request.onreadystatechange = function () {
+                    if (4 === request.readyState) {
+                        if (200 <= request.status && request.status < 300) {
+                            resolve(request.responseText);
+                        }
+                        else {
+                            reject({
+                                url: url,
+                                request: request
+                            });
+                        }
+                    }
+                };
+                request.send(body);
+                return [2 /*return*/];
+            });
+        }); }); };
+        http.get = function (url) { return http.request("GET", url); };
+        http.post = function (url, body) { return http.request("POST", url, body); };
+    })(http = minamo.http || (minamo.http = {}));
+    var file;
+    (function (file_1) {
+        var _this = this;
+        file_1.readAsText = function (file) { return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+            var reader;
+            return __generator(this, function (_a) {
+                reader = new FileReader();
+                reader.onload = function () { return resolve(reader.result); };
+                reader.onerror = function () { return reject(reader.error); };
+                reader.readAsText(file);
+                return [2 /*return*/];
+            });
+        }); }); };
+    })(file = minamo.file || (minamo.file = {}));
     var dom;
     (function (dom) {
         dom.make = function (arg) {
@@ -633,9 +675,9 @@ var minamo;
         dom.remove = function (node) { return node.parentNode.removeChild(node); };
         dom.removeChildren = function (parent, isRemoveChild) {
             if (isRemoveChild) {
-                parent.childNodes.forEach(function (j) {
-                    if (isRemoveChild(j)) {
-                        dom.remove(j);
+                parent.childNodes.forEach(function (i) {
+                    if (isRemoveChild(i)) {
+                        parent.removeChild(i);
                     }
                 });
             }

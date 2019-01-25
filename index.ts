@@ -579,6 +579,56 @@ export module minamo
             }
         }
     }
+
+    export module http
+    {
+        export const request = (method: string, url: string, body?: Document | BodyInit | null): Promise<string> => new Promise<string>
+        (
+            async (resolve, reject) =>
+            {
+                const request = new XMLHttpRequest();
+                request.open(method, url, true);
+                request.onreadystatechange = function()
+                {
+                    if (4 === request.readyState)
+                    {
+                        if (200 <= request.status && request.status < 300)
+                        {
+                            resolve(request.responseText);
+                        }
+                        else
+                        {
+                            reject
+                            (
+                                {
+                                    url,
+                                    request
+                                }
+                            );
+                        }
+                    }
+                };
+                request.send(body);
+            }
+        );
+
+        export const get = (url : string): Promise<string> => request("GET", url);
+        export const post = (url : string, body?: Document | BodyInit | null): Promise<string> => request("POST", url, body);
+    }
+    
+    export module file
+    {
+        export const readAsText = (file: File): Promise<string> => new Promise<string>
+        (
+            async (resolve, reject) =>
+            {
+                const reader = new FileReader();
+                reader.onload = ()=> resolve(<string>reader.result);
+                reader.onerror = ()=> reject(reader.error);
+                reader.readAsText(file);
+            }
+        );
+    }
     
     export module dom
     {
@@ -652,11 +702,11 @@ export module minamo
             {
                 parent.childNodes.forEach
                 (
-                    j =>
+                    i =>
                     {
-                        if (isRemoveChild(j))
+                        if (isRemoveChild(i))
                         {
-                            remove(j);
+                            parent.removeChild(i);
                         }
                     }
                 );
