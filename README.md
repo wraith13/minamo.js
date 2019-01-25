@@ -37,4 +37,4 @@ You can use automatic build. Run `Tasks: Allow Automatic Tasks in Folder` comman
 
 Open `./test/test.htm` in a web browser. That's it.
 
-Live status: <https://wraith13.github.io/minamo.js//test/test.htm>
+Live status: <https://wraith13.github.io/minamo.js/test/test.htm>
