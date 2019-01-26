@@ -4,10 +4,10 @@ export module test
 {
     interface TestResult
     {
-        isSucceeded : boolean;
+        isSucceeded: boolean;
         testType: string;
-        expression : string;
-        data? : { };
+        expression: string;
+        data?: { };
     }
     const counts =
     {
@@ -15,38 +15,38 @@ export module test
         ok: 0,
         ng: 0,
     };
-    const resultCount = (result : TestResult) : TestResult =>
+    const resultCount = (result: TestResult): TestResult =>
     {
         ++counts.total;
         result.isSucceeded ? ++counts.ok: ++counts.ng;
         return result;
     }
-    const makeResultTable = (result : TestResult[]) =>
+    const makeResultTable = (result: TestResult[]) =>
     (
         {
-            tag : "table",
-            className : "details",
+            tag: "table",
+            className: "details",
             children :
             [
                 {
-                    tag : "tr",
+                    tag: "tr",
                     children :
                     [
                         {
-                            tag : "th",
-                            children : "result",
+                            tag: "th",
+                            children: "result",
                         },
                         {
-                            tag : "th",
-                            children : "type",
+                            tag: "th",
+                            children: "type",
                         },
                         {
-                            tag : "th",
-                            children : "expression",
+                            tag: "th",
+                            children: "expression",
                         },
                         {
-                            tag : "th",
-                            children : "data",
+                            tag: "th",
+                            children: "data",
                         },
                     ],
                 },
@@ -59,25 +59,25 @@ export module test
                         i =>
                         (
                             {
-                                tag : "tr",
+                                tag: "tr",
                                 className: i.isSucceeded ? undefined: "error",
                                 children :
                                 [
                                     {
-                                        tag : "td",
-                                        children : i.isSucceeded ? "✅ OK": "🚫 NG",
+                                        tag: "td",
+                                        children: i.isSucceeded ? "✅ OK": "🚫 NG",
                                     },
                                     {
-                                        tag : "td",
-                                        children : i.testType,
+                                        tag: "td",
+                                        children: i.testType,
                                     },
                                     {
-                                        tag : "td",
-                                        children : i.expression,
+                                        tag: "td",
+                                        children: i.expression,
                                     },
                                     {
-                                        tag : "td",
-                                        children : undefined === i ?
+                                        tag: "td",
+                                        children: undefined === i ?
                                             "undefined":
                                             JSON.stringify(i.data),
                                     },
@@ -88,13 +88,13 @@ export module test
             )
         }
     )
-    export const tryTest = (expression : string) : { isSucceeded : boolean, result : any, error: any } =>
+    export const tryTest = (expression: string): { isSucceeded: boolean, result: any, error: any } =>
     {
         const result =
         {
             isSucceeded :  false,
-            result : undefined,
-            error : undefined,
+            result: undefined,
+            error: undefined,
         };
         try
         {
@@ -112,48 +112,121 @@ export module test
         }
         return result;
     }
-    export const equalTest = (expression : string, predicted : any) =>
+    export const evalAsync = async (expression: string) => await eval(expression);
+    export const tryTestAsync = async (expression: string): Promise<{ isSucceeded: boolean, result: any, error: any }> =>
     {
-        const result = tryTest(expression);
-        return {
-            isSucceeded : result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
-            testType : "equal",
-            expression : `${JSON.stringify(predicted)} === ${expression}`,
-            data : result.isSucceeded ?
-                { predicted, result:result.result, }:
-                { predicted, error:result.error, },
+        const result =
+        {
+            isSucceeded :  false,
+            result: undefined,
+            error: undefined,
         };
+        try
+        {
+            result.result = await evalAsync(expression);
+            result.isSucceeded = true;
+        }
+        catch(error)
+        {
+            result.error = error instanceof Error ?
+            {
+                name: error.name,
+                message: error.message,
+            }:
+            error;
+        }
+        return result;
     }
-    export const errorTest = (expression : string) =>
+    export const test = (expression: string) =>
     {
         const result = tryTest(expression);
         return {
-            isSucceeded : !result.isSucceeded,
-            testType : "error",
+            isSucceeded: result.isSucceeded,
+            testType: "success",
             expression,
-            data : result.isSucceeded ?
-                { result:result.result, }:
-                { error:result.error, },
+            data: result.isSucceeded ?
+                { result: result.result, }:
+                { error: result.error, },
         };
     }
-    export const start = async () : Promise<void> =>
+    export const testAsync = async (expression: string) =>
+    {
+        const result = await tryTestAsync(expression);
+        return {
+            isSucceeded: result.isSucceeded,
+            testType: "success",
+            expression,
+            data: result.isSucceeded ?
+                { result: result.result, }:
+                { error: result.error, },
+        };
+    }
+    export const errorTest = (expression: string) =>
+    {
+        const result = tryTest(expression);
+        return {
+            isSucceeded: !result.isSucceeded,
+            testType: "error",
+            expression,
+            data: result.isSucceeded ?
+                { result: result.result, }:
+                { error: result.error, },
+        };
+    }
+    export const errorTestAsync = async (expression: string) =>
+    {
+        const result = await tryTestAsync(expression);
+        return {
+            isSucceeded: !result.isSucceeded,
+            testType: "error",
+            expression,
+            data: result.isSucceeded ?
+                { result: result.result, }:
+                { error: result.error, },
+        };
+    }
+    export const equalTest = (expression: string, predicted: any) =>
+    {
+        const result = tryTest(expression);
+        return {
+            isSucceeded: result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
+            testType: "equal",
+            expression: `${JSON.stringify(predicted)} === ${expression}`,
+            data: result.isSucceeded ?
+                { predicted, result: result.result, }:
+                { predicted, error: result.error, },
+        };
+    }
+    export const equalTestAsync = async (expression: string, predicted: any) =>
+    {
+        const result = await tryTestAsync(expression);
+        return {
+            isSucceeded: result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
+            testType: "equal",
+            expression: `${JSON.stringify(predicted)} === ${expression}`,
+            data: result.isSucceeded ?
+                { predicted, result: result.result, }:
+                { predicted, error: result.error, },
+        };
+    }
+    export const start = async (): Promise<void> =>
     {
         minamo.dom.appendChildren
         (
             document.body,
             [
-                { tag : "h1", children : document.title },
+                { tag: "h1", children: document.title },
                 {
                     tag: "p",
                     children:
                     [
                         "minamo.js is a necessary, sufficient, simple and compact JavaScript/TypeScript library.",
-                        { tag: "a", className: "github", href:"https://github.com/wraith13/minamo.js", children: "GitHub", },
+                        { tag: "a", className: "github", href: "https://github.com/wraith13/minamo.js", children: "GitHub", },
                     ],
                 },
-                { tag : "h2", children : "summary" },
-                { tag : "h2", children : "minamo.core" },
-                { tag : "h3", children : "minamo.core.exists" },
+                { tag: "h2", children: "summary" },
+                { tag: "h2", children: "minamo.core" },
+                { tag: "h3", children: "minamo.core.exists" },
                 makeResultTable
                 (
                     [
@@ -167,20 +240,34 @@ export module test
                         equalTest(`minamo.core.exists(undefined)`, false),
                     ]
                 ),
-                { tag : "h3", children : "minamo.core.separate" },
+                { tag: "h3", children: "minamo.core.existsOrThrow" },
                 makeResultTable
                 (
                     [
-                        equalTest(`minamo.core.separate("abc@def", "@")`, { head:"abc", tail:"def" }),
-                        equalTest(`minamo.core.separate("abc@", "@")`, { head:"abc", tail:"" }),
-                        equalTest(`minamo.core.separate("@def", "@")`, { head:"", tail:"def" }),
-                        equalTest(`minamo.core.separate("abc", "@")`, { head:"abc", tail:null }),
-                        equalTest(`minamo.core.separate("", "@")`, { head:"", tail:null }),
-                        errorTest(`minamo.core.separate(null, "@")`),
-                        equalTest(`minamo.core.separate("abc@def", null)`, { head:"abc@def", tail:null }),
+                        equalTest(`minamo.core.existsOrThrow("abc")`, "abc"),
+                        equalTest(`minamo.core.existsOrThrow(true)`, true),
+                        equalTest(`minamo.core.existsOrThrow(false)`, false),
+                        equalTest(`minamo.core.existsOrThrow("0")`, "0"),
+                        equalTest(`minamo.core.existsOrThrow(0)`, 0),
+                        equalTest(`minamo.core.existsOrThrow("")`, ""),
+                        errorTest(`minamo.core.existsOrThrow(null)`),
+                        errorTest(`minamo.core.existsOrThrow(undefined)`),
                     ]
                 ),
-                { tag : "h3", children : "minamo.core.bond" },
+                { tag: "h3", children: "minamo.core.separate" },
+                makeResultTable
+                (
+                    [
+                        equalTest(`minamo.core.separate("abc@def", "@")`, { head: "abc", tail: "def" }),
+                        equalTest(`minamo.core.separate("abc@", "@")`, { head: "abc", tail: "" }),
+                        equalTest(`minamo.core.separate("@def", "@")`, { head: "", tail: "def" }),
+                        equalTest(`minamo.core.separate("abc", "@")`, { head: "abc", tail: null }),
+                        equalTest(`minamo.core.separate("", "@")`, { head: "", tail: null }),
+                        errorTest(`minamo.core.separate(null, "@")`),
+                        equalTest(`minamo.core.separate("abc@def", null)`, { head: "abc@def", tail: null }),
+                    ]
+                ),
+                { tag: "h3", children: "minamo.core.bond" },
                 makeResultTable
                 (
                     [
@@ -200,43 +287,43 @@ export module test
         (
             document.body,
             {
-                tag : "table",
-                className : "summary",
+                tag: "table",
+                className: "summary",
                 children :
                 [
                     {
-                        tag : "tr",
+                        tag: "tr",
                         children :
                         [
                             {
-                                tag : "th",
-                                children : "total",
+                                tag: "th",
+                                children: "total",
                             },
                             {
-                                tag : "th",
-                                children : "✅ OK",
+                                tag: "th",
+                                children: "✅ OK",
                             },
                             {
-                                tag : "th",
-                                children : "🚫 NG",
+                                tag: "th",
+                                children: "🚫 NG",
                             },
                         ],
                     },
                     {
-                        tag : "tr",
+                        tag: "tr",
                         children :
                         [
                             {
-                                tag : "td",
-                                children : counts.total.toLocaleString(),
+                                tag: "td",
+                                children: counts.total.toLocaleString(),
                             },
                             {
-                                tag : "td",
-                                children : counts.ok.toLocaleString(),
+                                tag: "td",
+                                children: counts.ok.toLocaleString(),
                             },
                             {
-                                tag : "td",
-                                children : counts.ng.toLocaleString(),
+                                tag: "td",
+                                children: counts.ng.toLocaleString(),
                             },
                         ],
                     },

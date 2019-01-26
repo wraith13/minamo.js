@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var __1 = require("..");
 var test;
-(function (test) {
+(function (test_1) {
     var _this = this;
     var counts = {
         total: 0,
@@ -105,7 +105,7 @@ var test;
             }))
         });
     };
-    test.tryTest = function (expression) {
+    test_1.tryTest = function (expression) {
         var result = {
             isSucceeded: false,
             result: undefined,
@@ -125,19 +125,75 @@ var test;
         }
         return result;
     };
-    test.equalTest = function (expression, predicted) {
-        var result = test.tryTest(expression);
+    test_1.evalAsync = function (expression) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, eval(expression)];
+            case 1: return [2 /*return*/, _a.sent()];
+        }
+    }); }); };
+    test_1.tryTestAsync = function (expression) { return __awaiter(_this, void 0, void 0, function () {
+        var result, _a, error_1;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    result = {
+                        isSucceeded: false,
+                        result: undefined,
+                        error: undefined,
+                    };
+                    _b.label = 1;
+                case 1:
+                    _b.trys.push([1, 3, , 4]);
+                    _a = result;
+                    return [4 /*yield*/, test_1.evalAsync(expression)];
+                case 2:
+                    _a.result = _b.sent();
+                    result.isSucceeded = true;
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_1 = _b.sent();
+                    result.error = error_1 instanceof Error ?
+                        {
+                            name: error_1.name,
+                            message: error_1.message,
+                        } :
+                        error_1;
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/, result];
+            }
+        });
+    }); };
+    test_1.test = function (expression) {
+        var result = test_1.tryTest(expression);
         return {
-            isSucceeded: result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
-            testType: "equal",
-            expression: JSON.stringify(predicted) + " === " + expression,
+            isSucceeded: result.isSucceeded,
+            testType: "success",
+            expression: expression,
             data: result.isSucceeded ?
-                { predicted: predicted, result: result.result, } :
-                { predicted: predicted, error: result.error, },
+                { result: result.result, } :
+                { error: result.error, },
         };
     };
-    test.errorTest = function (expression) {
-        var result = test.tryTest(expression);
+    test_1.testAsync = function (expression) { return __awaiter(_this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, test_1.tryTestAsync(expression)];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, {
+                            isSucceeded: result.isSucceeded,
+                            testType: "success",
+                            expression: expression,
+                            data: result.isSucceeded ?
+                                { result: result.result, } :
+                                { error: result.error, },
+                        }];
+            }
+        });
+    }); };
+    test_1.errorTest = function (expression) {
+        var result = test_1.tryTest(expression);
         return {
             isSucceeded: !result.isSucceeded,
             testType: "error",
@@ -147,7 +203,54 @@ var test;
                 { error: result.error, },
         };
     };
-    test.start = function () { return __awaiter(_this, void 0, void 0, function () {
+    test_1.errorTestAsync = function (expression) { return __awaiter(_this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, test_1.tryTestAsync(expression)];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, {
+                            isSucceeded: !result.isSucceeded,
+                            testType: "error",
+                            expression: expression,
+                            data: result.isSucceeded ?
+                                { result: result.result, } :
+                                { error: result.error, },
+                        }];
+            }
+        });
+    }); };
+    test_1.equalTest = function (expression, predicted) {
+        var result = test_1.tryTest(expression);
+        return {
+            isSucceeded: result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
+            testType: "equal",
+            expression: JSON.stringify(predicted) + " === " + expression,
+            data: result.isSucceeded ?
+                { predicted: predicted, result: result.result, } :
+                { predicted: predicted, error: result.error, },
+        };
+    };
+    test_1.equalTestAsync = function (expression, predicted) { return __awaiter(_this, void 0, void 0, function () {
+        var result;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, test_1.tryTestAsync(expression)];
+                case 1:
+                    result = _a.sent();
+                    return [2 /*return*/, {
+                            isSucceeded: result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
+                            testType: "equal",
+                            expression: JSON.stringify(predicted) + " === " + expression,
+                            data: result.isSucceeded ?
+                                { predicted: predicted, result: result.result, } :
+                                { predicted: predicted, error: result.error, },
+                        }];
+            }
+        });
+    }); };
+    test_1.start = function () { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             __1.minamo.dom.appendChildren(document.body, [
                 { tag: "h1", children: document.title },
@@ -162,35 +265,46 @@ var test;
                 { tag: "h2", children: "minamo.core" },
                 { tag: "h3", children: "minamo.core.exists" },
                 makeResultTable([
-                    test.equalTest("minamo.core.exists(\"abc\")", true),
-                    test.equalTest("minamo.core.exists(true)", true),
-                    test.equalTest("minamo.core.exists(false)", true),
-                    test.equalTest("minamo.core.exists(\"0\")", true),
-                    test.equalTest("minamo.core.exists(0)", true),
-                    test.equalTest("minamo.core.exists(\"\")", true),
-                    test.equalTest("minamo.core.exists(null)", false),
-                    test.equalTest("minamo.core.exists(undefined)", false),
+                    test_1.equalTest("minamo.core.exists(\"abc\")", true),
+                    test_1.equalTest("minamo.core.exists(true)", true),
+                    test_1.equalTest("minamo.core.exists(false)", true),
+                    test_1.equalTest("minamo.core.exists(\"0\")", true),
+                    test_1.equalTest("minamo.core.exists(0)", true),
+                    test_1.equalTest("minamo.core.exists(\"\")", true),
+                    test_1.equalTest("minamo.core.exists(null)", false),
+                    test_1.equalTest("minamo.core.exists(undefined)", false),
+                ]),
+                { tag: "h3", children: "minamo.core.existsOrThrow" },
+                makeResultTable([
+                    test_1.equalTest("minamo.core.existsOrThrow(\"abc\")", "abc"),
+                    test_1.equalTest("minamo.core.existsOrThrow(true)", true),
+                    test_1.equalTest("minamo.core.existsOrThrow(false)", false),
+                    test_1.equalTest("minamo.core.existsOrThrow(\"0\")", "0"),
+                    test_1.equalTest("minamo.core.existsOrThrow(0)", 0),
+                    test_1.equalTest("minamo.core.existsOrThrow(\"\")", ""),
+                    test_1.errorTest("minamo.core.existsOrThrow(null)"),
+                    test_1.errorTest("minamo.core.existsOrThrow(undefined)"),
                 ]),
                 { tag: "h3", children: "minamo.core.separate" },
                 makeResultTable([
-                    test.equalTest("minamo.core.separate(\"abc@def\", \"@\")", { head: "abc", tail: "def" }),
-                    test.equalTest("minamo.core.separate(\"abc@\", \"@\")", { head: "abc", tail: "" }),
-                    test.equalTest("minamo.core.separate(\"@def\", \"@\")", { head: "", tail: "def" }),
-                    test.equalTest("minamo.core.separate(\"abc\", \"@\")", { head: "abc", tail: null }),
-                    test.equalTest("minamo.core.separate(\"\", \"@\")", { head: "", tail: null }),
-                    test.errorTest("minamo.core.separate(null, \"@\")"),
-                    test.equalTest("minamo.core.separate(\"abc@def\", null)", { head: "abc@def", tail: null }),
+                    test_1.equalTest("minamo.core.separate(\"abc@def\", \"@\")", { head: "abc", tail: "def" }),
+                    test_1.equalTest("minamo.core.separate(\"abc@\", \"@\")", { head: "abc", tail: "" }),
+                    test_1.equalTest("minamo.core.separate(\"@def\", \"@\")", { head: "", tail: "def" }),
+                    test_1.equalTest("minamo.core.separate(\"abc\", \"@\")", { head: "abc", tail: null }),
+                    test_1.equalTest("minamo.core.separate(\"\", \"@\")", { head: "", tail: null }),
+                    test_1.errorTest("minamo.core.separate(null, \"@\")"),
+                    test_1.equalTest("minamo.core.separate(\"abc@def\", null)", { head: "abc@def", tail: null }),
                 ]),
                 { tag: "h3", children: "minamo.core.bond" },
                 makeResultTable([
-                    test.equalTest("minamo.core.bond(\"abc\", \"@\", \"def\")", "abc@def"),
-                    test.equalTest("minamo.core.bond(\"abc\", \"@\", \"\")", "abc@"),
-                    test.equalTest("minamo.core.bond(\"\", \"@\", \"def\")", "@def"),
-                    test.equalTest("minamo.core.bond(\"abc\", \"@\", null)", "abc"),
-                    test.errorTest("minamo.core.bond(null, null, null)"),
-                    test.errorTest("minamo.core.bond(null, \"@\", null)"),
-                    test.errorTest("minamo.core.bond(null, \"@\", \"def\")"),
-                    test.errorTest("minamo.core.bond(\"abc\", null, \"def\")"),
+                    test_1.equalTest("minamo.core.bond(\"abc\", \"@\", \"def\")", "abc@def"),
+                    test_1.equalTest("minamo.core.bond(\"abc\", \"@\", \"\")", "abc@"),
+                    test_1.equalTest("minamo.core.bond(\"\", \"@\", \"def\")", "@def"),
+                    test_1.equalTest("minamo.core.bond(\"abc\", \"@\", null)", "abc"),
+                    test_1.errorTest("minamo.core.bond(null, null, null)"),
+                    test_1.errorTest("minamo.core.bond(null, \"@\", null)"),
+                    test_1.errorTest("minamo.core.bond(null, \"@\", \"def\")"),
+                    test_1.errorTest("minamo.core.bond(\"abc\", null, \"def\")"),
                 ]),
             ]);
             __1.minamo.dom.appendChildren(document.body, {
