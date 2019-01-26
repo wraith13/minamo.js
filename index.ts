@@ -69,7 +69,7 @@ export module minamo
         {
             if (!exists(i))
             {
-                throw new ReferenceError("existsOrThrow() encountered a unexist value.");
+                throw new ReferenceError("minamo.core.existsOrThrow() encountered a unexist value.");
             }
             return i;
         }
@@ -190,7 +190,7 @@ export module minamo
             "function" === typeof i ?
                 await (<() => Promise<ValueT>>i)():
                 i; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
-        export const getLast = <ValutT>(i: ValutT[]): ValutT => i[i.length - 1];
+        export const getLast = <ValueT>(x: ValueT | ValueT[]): ValueT =>  Array.isArray(x) ? x[x.length - 1]: x;
         export const arrayOrToArray = <ValueT>(x: ValueT | ValueT[]): ValueT[] => Array.isArray(x) ? x: [x];
         export const singleOrArray = <ValueT>
         (
@@ -282,13 +282,21 @@ export module minamo
             exists(tail) ?
                 `${existsOrThrow(head)}${existsOrThrow(separator)}${tail}`:
                 existsOrThrow(head);
-        export const countMap = <ValueT>(mapFunction: (index: number, result: ValueT[]) => ValueT | null) =>
+        export const loopMap = <ValueT>(mapFunction: (index: number, result: ValueT[]) => ValueT | null, limit?: number) =>
         {
             const result: ValueT[] = [];
             let index = 0;
+            if (!exists(limit))
+            {
+                limit = 100000;
+            }
             while(true)
             {
-                const current = mapFunction(index, result);
+                if (limit <= index)
+                {
+                    throw new RangeError(`minamo.core.loopMap() overs the limit(${limit})`);
+                }
+                const current = mapFunction(index++, result);
                 if (exists(current))
                 {
                     result.push(current);
@@ -300,10 +308,24 @@ export module minamo
             }
             return result;
         };
-        export const runLengthString = (unit: string, length: number): string =>
-            countMap(i => i < length ? unit: null).join("");
+        export const countMap = <ValueT>(count: number, mapFunction: ValueT | ((index: number, result: ValueT[]) => ValueT)) =>
+        {
+            const result: ValueT[] = [];
+            let index = 0;
+            while(index < count)
+            {
+                result.push
+                (
+                    "function" === typeof mapFunction ?
+                        (<(index: number, result: ValueT[]) => ValueT>mapFunction)(index, result):
+                        mapFunction
+                );
+                ++index;
+            }
+            return result;
+        };
         export const zeroPadding = (length: number, n: number): string =>
-            `${runLengthString("0", length -1)}${n}`.substr(-length);
+            `${countMap(length -1, "0").join("")}${n}`.substr(-length);
     }
     export module cookie
     {
@@ -584,7 +606,7 @@ export module minamo
     {
         export const request = (method: string, url: string, body?: Document | BodyInit | null): Promise<string> => new Promise<string>
         (
-            async (resolve, reject) =>
+            (resolve, reject) =>
             {
                 const request = new XMLHttpRequest();
                 request.open(method, url, true);
@@ -620,7 +642,7 @@ export module minamo
     {
         export const readAsText = (file: File): Promise<string> => new Promise<string>
         (
-            async (resolve, reject) =>
+            (resolve, reject) =>
             {
                 const reader = new FileReader();
                 reader.onload = ()=> resolve(<string>reader.result);

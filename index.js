@@ -111,7 +111,7 @@ var minamo;
         core.exists = function (i) { return undefined !== i && null !== i; };
         core.existsOrThrow = function (i) {
             if (!core.exists(i)) {
-                throw new ReferenceError("existsOrThrow() encountered a unexist value.");
+                throw new ReferenceError("minamo.core.existsOrThrow() encountered a unexist value.");
             }
             return i;
         };
@@ -274,7 +274,7 @@ var minamo;
                 }
             });
         }); }; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
-        core.getLast = function (i) { return i[i.length - 1]; };
+        core.getLast = function (x) { return Array.isArray(x) ? x[x.length - 1] : x; };
         core.arrayOrToArray = function (x) { return Array.isArray(x) ? x : [x]; };
         core.singleOrArray = function (x, singleFunction, arrayFunction) { return Array.isArray(x) ? arrayFunction(x) : singleFunction(x); };
         core.flatMap = function (source, mapFunction) {
@@ -322,11 +322,17 @@ var minamo;
                 "" + core.existsOrThrow(head) + core.existsOrThrow(separator) + tail :
                 core.existsOrThrow(head);
         };
-        core.countMap = function (mapFunction) {
+        core.loopMap = function (mapFunction, limit) {
             var result = [];
             var index = 0;
+            if (!core.exists(limit)) {
+                limit = 100000;
+            }
             while (true) {
-                var current = mapFunction(index, result);
+                if (limit <= index) {
+                    throw new RangeError("minamo.core.loopMap() overs the limit(" + limit + ")");
+                }
+                var current = mapFunction(index++, result);
                 if (core.exists(current)) {
                     result.push(current);
                 }
@@ -336,11 +342,19 @@ var minamo;
             }
             return result;
         };
-        core.runLengthString = function (unit, length) {
-            return core.countMap(function (i) { return i < length ? unit : null; }).join("");
+        core.countMap = function (count, mapFunction) {
+            var result = [];
+            var index = 0;
+            while (index < count) {
+                result.push("function" === typeof mapFunction ?
+                    mapFunction(index, result) :
+                    mapFunction);
+                ++index;
+            }
+            return result;
         };
         core.zeroPadding = function (length, n) {
-            return ("" + core.runLengthString("0", length - 1) + n).substr(-length);
+            return ("" + core.countMap(length - 1, "0").join("") + n).substr(-length);
         };
     })(core = minamo.core || (minamo.core = {}));
     var cookie;
@@ -584,45 +598,35 @@ var minamo;
     })(sessionStorage = minamo.sessionStorage || (minamo.sessionStorage = {}));
     var http;
     (function (http) {
-        var _this = this;
-        http.request = function (method, url, body) { return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-            var request;
-            return __generator(this, function (_a) {
-                request = new XMLHttpRequest();
-                request.open(method, url, true);
-                request.onreadystatechange = function () {
-                    if (4 === request.readyState) {
-                        if (200 <= request.status && request.status < 300) {
-                            resolve(request.responseText);
-                        }
-                        else {
-                            reject({
-                                url: url,
-                                request: request
-                            });
-                        }
+        http.request = function (method, url, body) { return new Promise(function (resolve, reject) {
+            var request = new XMLHttpRequest();
+            request.open(method, url, true);
+            request.onreadystatechange = function () {
+                if (4 === request.readyState) {
+                    if (200 <= request.status && request.status < 300) {
+                        resolve(request.responseText);
                     }
-                };
-                request.send(body);
-                return [2 /*return*/];
-            });
-        }); }); };
+                    else {
+                        reject({
+                            url: url,
+                            request: request
+                        });
+                    }
+                }
+            };
+            request.send(body);
+        }); };
         http.get = function (url) { return http.request("GET", url); };
         http.post = function (url, body) { return http.request("POST", url, body); };
     })(http = minamo.http || (minamo.http = {}));
     var file;
     (function (file_1) {
-        var _this = this;
-        file_1.readAsText = function (file) { return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-            var reader;
-            return __generator(this, function (_a) {
-                reader = new FileReader();
-                reader.onload = function () { return resolve(reader.result); };
-                reader.onerror = function () { return reject(reader.error); };
-                reader.readAsText(file);
-                return [2 /*return*/];
-            });
-        }); }); };
+        file_1.readAsText = function (file) { return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function () { return resolve(reader.result); };
+            reader.onerror = function () { return reject(reader.error); };
+            reader.readAsText(file);
+        }); };
     })(file = minamo.file || (minamo.file = {}));
     var dom;
     (function (dom) {
