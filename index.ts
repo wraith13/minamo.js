@@ -325,7 +325,26 @@ export module minamo
             return result;
         };
         export const zeroPadding = (length: number, n: number): string =>
-            `${countMap(length -1, "0").join("")}${n}`.substr(-length);
+        {
+            if (21 < length)
+            {
+                throw new RangeError(`length(${length}) in minamo.core.zeroPadding() overs 21.`);
+            }
+            if (1e+21 <= n)
+            {
+                throw new RangeError(`n(${n}) in minamo.core.zeroPadding() is 1e+21 or more.`);
+            }
+            if (n <= -1e+21)
+            {
+                throw new RangeError(`n(${n}) in minamo.core.zeroPadding() is -1e+21 or less.`);
+            }
+
+            const sign = n < 0 ? "-": "";
+            const core = `${Math.abs(Math.round(n))}`;
+            const paddingLength = length -(sign.length + core.length);
+            const padding = 0 < paddingLength ? "00000000000000000000".substr(-paddingLength): "";
+            return `${sign}${padding}${core}`;
+        }
     }
     export module cookie
     {

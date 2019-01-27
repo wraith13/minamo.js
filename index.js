@@ -51,12 +51,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var minamo;
 (function (minamo) {
     var core;
-    (function (core) {
+    (function (core_1) {
         var _this = this;
-        core.timeout = function (wait) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+        core_1.timeout = function (wait) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (resolve) { return setTimeout(resolve, wait); })];
         }); }); };
-        core.tryOrThrough = function (title, f) {
+        core_1.tryOrThrough = function (title, f) {
             try {
                 f();
             }
@@ -64,7 +64,7 @@ var minamo;
                 console.error("\uD83D\uDEAB " + title + ": " + err);
             }
         };
-        core.tryOrThroughAsync = function (title, f) {
+        core_1.tryOrThroughAsync = function (title, f) {
             return __awaiter(this, void 0, void 0, function () {
                 var err_1;
                 return __generator(this, function (_a) {
@@ -84,19 +84,19 @@ var minamo;
                 });
             });
         };
-        core.simpleDeepCopy = function (source) { return JSON.parse(JSON.stringify(source)); };
-        core.recursiveAssign = function (target, source) { return core.objectForEach(source, function (key, value) {
-            if ("object" === core.practicalTypeof(value)) {
+        core_1.simpleDeepCopy = function (source) { return JSON.parse(JSON.stringify(source)); };
+        core_1.recursiveAssign = function (target, source) { return core_1.objectForEach(source, function (key, value) {
+            if ("object" === core_1.practicalTypeof(value)) {
                 if (undefined === target[key]) {
                     target[key] = {};
                 }
-                core.recursiveAssign(target[key], value);
+                core_1.recursiveAssign(target[key], value);
             }
             else {
                 target[key] = value;
             }
         }); };
-        core.practicalTypeof = function (obj) {
+        core_1.practicalTypeof = function (obj) {
             if (undefined === obj) {
                 return "undefined";
             }
@@ -108,9 +108,9 @@ var minamo;
             }
             return typeof obj;
         };
-        core.exists = function (i) { return undefined !== i && null !== i; };
-        core.existsOrThrow = function (i) {
-            if (!core.exists(i)) {
+        core_1.exists = function (i) { return undefined !== i && null !== i; };
+        core_1.existsOrThrow = function (i) {
+            if (!core_1.exists(i)) {
                 throw new ReferenceError("minamo.core.existsOrThrow() encountered a unexist value.");
             }
             return i;
@@ -125,8 +125,8 @@ var minamo;
                     _this.rawParams = null;
                     return _this;
                 };
-                this.getWithoutParams = function () { return core.separate(_this.url, "?").head; };
-                this.getRawParamsString = function () { return core.separate(_this.url, "?").tail; };
+                this.getWithoutParams = function () { return core_1.separate(_this.url, "?").head; };
+                this.getRawParamsString = function () { return core_1.separate(_this.url, "?").tail; };
                 this.getRawParams = function () {
                     if (!_this.rawParams) {
                         _this.rawParams = {};
@@ -139,10 +139,10 @@ var minamo;
                     return _this.rawParams;
                 };
                 this.getParam = function (key) { return decodeURIComponent(_this.getRawParams()[key]); };
-                this.updateParams = function () { return _this.setRawParamsString(core.objectToArray(_this.rawParams, function (k, v) { return core.bond(k, "=", v); })
+                this.updateParams = function () { return _this.setRawParamsString(core_1.objectToArray(_this.rawParams, function (k, v) { return core_1.bond(k, "=", v); })
                     .join("&")); };
                 this.setRawParamsString = function (rawParamsString) {
-                    _this.url = core.bond(_this.getWithoutParams(), "?", rawParamsString);
+                    _this.url = core_1.bond(_this.getWithoutParams(), "?", rawParamsString);
                     return _this;
                 };
                 this.setRawParam = function (key, rawValue) {
@@ -155,13 +155,13 @@ var minamo;
                     return _this.updateParams();
                 };
                 this.setParams = function (params) {
-                    return _this.setRawParams(core.objectMap(params, function (_key, value) { return encodeURIComponent(value); }));
+                    return _this.setRawParams(core_1.objectMap(params, function (_key, value) { return encodeURIComponent(value); }));
                 };
                 this.toString = function () { return _this.url; };
             }
             return Url;
         }());
-        core.Url = Url;
+        core_1.Url = Url;
         var Listener = /** @class */ (function () {
             function Listener() {
                 var _this = this;
@@ -197,7 +197,7 @@ var minamo;
             }
             return Listener;
         }());
-        core.Listener = Listener;
+        core_1.Listener = Listener;
         ;
         var Property = /** @class */ (function () {
             function Property(updater) {
@@ -206,7 +206,7 @@ var minamo;
                 this.value = null;
                 this.onUpdate = new Listener();
                 this.onUpdateOnce = new Listener();
-                this.exists = function () { return core.exists(_this.value); };
+                this.exists = function () { return core_1.exists(_this.value); };
                 this.get = function () { return _this.value; };
                 this.setAsync = function (value, options) { return __awaiter(_this, void 0, void 0, function () {
                     return __generator(this, function (_a) {
@@ -251,13 +251,13 @@ var minamo;
             }
             return Property;
         }());
-        core.Property = Property;
-        core.getOrCall = function (i) {
+        core_1.Property = Property;
+        core_1.getOrCall = function (i) {
             return "function" === typeof i ?
                 i() :
                 i;
         }; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
-        core.getOrCallAsync = function (i) { return __awaiter(_this, void 0, void 0, function () {
+        core_1.getOrCallAsync = function (i) { return __awaiter(_this, void 0, void 0, function () {
             var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -274,25 +274,25 @@ var minamo;
                 }
             });
         }); }; // ここのキャストは不要なハズなんだけど TypeScript v3.2.4 のバグなのか、エラーになる。
-        core.getLast = function (x) { return Array.isArray(x) ? x[x.length - 1] : x; };
-        core.arrayOrToArray = function (x) { return Array.isArray(x) ? x : [x]; };
-        core.singleOrArray = function (x, singleFunction, arrayFunction) { return Array.isArray(x) ? arrayFunction(x) : singleFunction(x); };
-        core.flatMap = function (source, mapFunction) {
+        core_1.getLast = function (x) { return Array.isArray(x) ? x[x.length - 1] : x; };
+        core_1.arrayOrToArray = function (x) { return Array.isArray(x) ? x : [x]; };
+        core_1.singleOrArray = function (x, singleFunction, arrayFunction) { return Array.isArray(x) ? arrayFunction(x) : singleFunction(x); };
+        core_1.flatMap = function (source, mapFunction) {
             var result = [];
             core.arrayOrToArray(source).forEach(function (i) { return result = result.concat(mapFunction(i)); });
             return result;
         };
-        core.objectForEach = function (source, eachFunction) {
+        core_1.objectForEach = function (source, eachFunction) {
             Object.keys(source).forEach(function (key) { return eachFunction(key, source[key], source); });
         };
-        core.objectMap = function (source, mapFunction) {
+        core_1.objectMap = function (source, mapFunction) {
             var result = {};
-            core.objectForEach(source, function (key) { return result[key] = mapFunction(key, source[key], source); });
+            core_1.objectForEach(source, function (key) { return result[key] = mapFunction(key, source[key], source); });
             return result;
         };
-        core.objectFilter = function (source, filterFunction) {
+        core_1.objectFilter = function (source, filterFunction) {
             var result = {};
-            core.objectForEach(source, function (key) {
+            core_1.objectForEach(source, function (key) {
                 var value = source[key];
                 if (filterFunction(key, value, source)) {
                     result[key] = value;
@@ -300,12 +300,12 @@ var minamo;
             });
             return result;
         };
-        core.objectToArray = function (source, mapFunction) {
+        core_1.objectToArray = function (source, mapFunction) {
             var result = [];
-            core.objectForEach(source, function (key, value) { return result.push(mapFunction(key, value, source)); });
+            core_1.objectForEach(source, function (key, value) { return result.push(mapFunction(key, value, source)); });
             return result;
         };
-        core.separate = function (text, separator) {
+        core_1.separate = function (text, separator) {
             var index = text.indexOf(separator);
             return 0 <= index ?
                 {
@@ -317,15 +317,15 @@ var minamo;
                     tail: null,
                 };
         };
-        core.bond = function (head, separator, tail) {
-            return core.exists(tail) ?
-                "" + core.existsOrThrow(head) + core.existsOrThrow(separator) + tail :
-                core.existsOrThrow(head);
+        core_1.bond = function (head, separator, tail) {
+            return core_1.exists(tail) ?
+                "" + core_1.existsOrThrow(head) + core_1.existsOrThrow(separator) + tail :
+                core_1.existsOrThrow(head);
         };
-        core.loopMap = function (mapFunction, limit) {
+        core_1.loopMap = function (mapFunction, limit) {
             var result = [];
             var index = 0;
-            if (!core.exists(limit)) {
+            if (!core_1.exists(limit)) {
                 limit = 100000;
             }
             while (true) {
@@ -333,7 +333,7 @@ var minamo;
                     throw new RangeError("minamo.core.loopMap() overs the limit(" + limit + ")");
                 }
                 var current = mapFunction(index++, result);
-                if (core.exists(current)) {
+                if (core_1.exists(current)) {
                     result.push(current);
                 }
                 else {
@@ -342,7 +342,7 @@ var minamo;
             }
             return result;
         };
-        core.countMap = function (count, mapFunction) {
+        core_1.countMap = function (count, mapFunction) {
             var result = [];
             var index = 0;
             while (index < count) {
@@ -353,8 +353,21 @@ var minamo;
             }
             return result;
         };
-        core.zeroPadding = function (length, n) {
-            return ("" + core.countMap(length - 1, "0").join("") + n).substr(-length);
+        core_1.zeroPadding = function (length, n) {
+            if (21 < length) {
+                throw new RangeError("length(" + length + ") in minamo.core.zeroPadding() overs 21.");
+            }
+            if (1e+21 <= n) {
+                throw new RangeError("n(" + n + ") in minamo.core.zeroPadding() is 1e+21 or more.");
+            }
+            if (n <= -1e+21) {
+                throw new RangeError("n(" + n + ") in minamo.core.zeroPadding() is -1e+21 or less.");
+            }
+            var sign = n < 0 ? "-" : "";
+            var core = "" + Math.abs(Math.round(n));
+            var paddingLength = length - (sign.length + core.length);
+            var padding = 0 < paddingLength ? "00000000000000000000".substr(-paddingLength) : "";
+            return "" + sign + padding + core;
         };
     })(core = minamo.core || (minamo.core = {}));
     var cookie;
