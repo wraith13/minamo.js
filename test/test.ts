@@ -98,6 +98,7 @@ export module test
         };
         try
         {
+            console.log(`try ${expression}`);
             result.result = eval(expression);
             result.isSucceeded = true;
         }
@@ -123,6 +124,7 @@ export module test
         };
         try
         {
+            console.log(`try ${expression}`);
             result.result = await evalAsync(expression);
             result.isSucceeded = true;
         }
@@ -155,7 +157,7 @@ export module test
         return {
             isSucceeded: result.isSucceeded,
             testType: "success",
-            expression,
+            expression: `await ${expression}`,
             data: result.isSucceeded ?
                 { result: result.result, }:
                 { error: result.error, },
@@ -179,7 +181,7 @@ export module test
         return {
             isSucceeded: !result.isSucceeded,
             testType: "error",
-            expression,
+            expression: `await ${expression}`,
             data: result.isSucceeded ?
                 { result: result.result, }:
                 { error: result.error, },
@@ -203,7 +205,7 @@ export module test
         return {
             isSucceeded: result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
             testType: "equal",
-            expression: `${JSON.stringify(predicted)} === ${expression}`,
+            expression: `${JSON.stringify(predicted)} === await ${expression}`,
             data: result.isSucceeded ?
                 { predicted, result: result.result, }:
                 { predicted, error: result.error, },
@@ -254,31 +256,138 @@ export module test
                         errorTest(`minamo.core.existsOrThrow(undefined)`),
                     ]
                 ),
+                { tag: "h3", children: "minamo.core.getOrCall" },
+                makeResultTable
+                (
+                    [
+                        equalTest(`minamo.core.getOrCall("abc")`, "abc"),
+                        equalTest(`minamo.core.getOrCall(true)`, true),
+                        equalTest(`minamo.core.getOrCall(false)`, false),
+                        equalTest(`minamo.core.getOrCall("0")`, "0"),
+                        equalTest(`minamo.core.getOrCall(0)`, 0),
+                        equalTest(`minamo.core.getOrCall("")`, ""),
+                        equalTest(`minamo.core.getOrCall(null)`, null),
+                        equalTest(`minamo.core.getOrCall(undefined)`, undefined),
+                        equalTest(`minamo.core.getOrCall(()=>"abc")`, "abc"),
+                        equalTest(`minamo.core.getOrCall(()=>true)`, true),
+                        equalTest(`minamo.core.getOrCall(()=>false)`, false),
+                        equalTest(`minamo.core.getOrCall(()=>"0")`, "0"),
+                        equalTest(`minamo.core.getOrCall(()=>0)`, 0),
+                        equalTest(`minamo.core.getOrCall(()=>"")`, ""),
+                        equalTest(`minamo.core.getOrCall(()=>null)`, null),
+                        equalTest(`minamo.core.getOrCall(()=>undefined)`, undefined),
+                    ]
+                ),
+                { tag: "h3", children: "minamo.core.getOrCallAsync" },
+                makeResultTable
+                (
+                    [
+                        await equalTestAsync(`minamo.core.getOrCallAsync("abc")`, "abc"),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(true)`, true),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(false)`, false),
+                        await equalTestAsync(`minamo.core.getOrCallAsync("0")`, "0"),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(0)`, 0),
+                        await equalTestAsync(`minamo.core.getOrCallAsync("")`, ""),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(null)`, null),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(undefined)`, undefined),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(async ()=>"abc")`, "abc"),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(async ()=>true)`, true),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(async ()=>false)`, false),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(async ()=>"0")`, "0"),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(async ()=>0)`, 0),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(async ()=>"")`, ""),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(async ()=>null)`, null),
+                        await equalTestAsync(`minamo.core.getOrCallAsync(async ()=>undefined)`, undefined),
+                    ]
+                ),
+                { tag: "h3", children: "minamo.core.getLast" },
+                makeResultTable
+                (
+                    [
+                        await equalTestAsync(`minamo.core.getLast("abc")`, "abc"),
+                        await equalTestAsync(`minamo.core.getLast(true)`, true),
+                        await equalTestAsync(`minamo.core.getLast(false)`, false),
+                        await equalTestAsync(`minamo.core.getLast("0")`, "0"),
+                        await equalTestAsync(`minamo.core.getLast(0)`, 0),
+                        await equalTestAsync(`minamo.core.getLast("")`, ""),
+                        await equalTestAsync(`minamo.core.getLast(null)`, null),
+                        await equalTestAsync(`minamo.core.getLast(undefined)`, undefined),
+                        await equalTestAsync(`minamo.core.getLast(["abc"])`, "abc"),
+                        await equalTestAsync(`minamo.core.getLast([true])`, true),
+                        await equalTestAsync(`minamo.core.getLast([false])`, false),
+                        await equalTestAsync(`minamo.core.getLast(["0"])`, "0"),
+                        await equalTestAsync(`minamo.core.getLast([0])`, 0),
+                        await equalTestAsync(`minamo.core.getLast([""])`, ""),
+                        await equalTestAsync(`minamo.core.getLast([null])`, null),
+                        await equalTestAsync(`minamo.core.getLast([undefined])`, undefined),
+                        await equalTestAsync(`minamo.core.getLast([123,"abc"])`, "abc"),
+                        await equalTestAsync(`minamo.core.getLast([123,true])`, true),
+                        await equalTestAsync(`minamo.core.getLast([123,false])`, false),
+                        await equalTestAsync(`minamo.core.getLast([123,"0"])`, "0"),
+                        await equalTestAsync(`minamo.core.getLast([123,0])`, 0),
+                        await equalTestAsync(`minamo.core.getLast([123,""])`, ""),
+                        await equalTestAsync(`minamo.core.getLast([123,null])`, null),
+                        await equalTestAsync(`minamo.core.getLast([123,undefined])`, undefined),
+                    ]
+                ),
                 { tag: "h3", children: "minamo.core.separate" },
                 makeResultTable
                 (
                     [
+                        equalTest(`minamo.core.separate("abcdefghi", "efg")`, { head: "abcd", tail: "hi" }),
                         equalTest(`minamo.core.separate("abc@def", "@")`, { head: "abc", tail: "def" }),
                         equalTest(`minamo.core.separate("abc@", "@")`, { head: "abc", tail: "" }),
                         equalTest(`minamo.core.separate("@def", "@")`, { head: "", tail: "def" }),
                         equalTest(`minamo.core.separate("abc", "@")`, { head: "abc", tail: null }),
                         equalTest(`minamo.core.separate("", "@")`, { head: "", tail: null }),
                         errorTest(`minamo.core.separate(null, "@")`),
+                        errorTest(`minamo.core.separate(undefined, "@")`),
                         equalTest(`minamo.core.separate("abc@def", null)`, { head: "abc@def", tail: null }),
+                        equalTest(`minamo.core.separate("abc@def", undefined)`, { head: "abc@def", tail: null }),
                     ]
                 ),
                 { tag: "h3", children: "minamo.core.bond" },
                 makeResultTable
                 (
                     [
+                        equalTest(`minamo.core.bond("abcd", "efg", "hi")`, "abcdefghi"),
                         equalTest(`minamo.core.bond("abc", "@", "def")`, "abc@def"),
                         equalTest(`minamo.core.bond("abc", "@", "")`, "abc@"),
                         equalTest(`minamo.core.bond("", "@", "def")`, "@def"),
                         equalTest(`minamo.core.bond("abc", "@", null)`, "abc"),
+                        equalTest(`minamo.core.bond("abc", "@", undefined)`, "abc"),
                         errorTest(`minamo.core.bond(null, null, null)`),
                         errorTest(`minamo.core.bond(null, "@", null)`),
                         errorTest(`minamo.core.bond(null, "@", "def")`),
                         errorTest(`minamo.core.bond("abc", null, "def")`),
+                        errorTest(`minamo.core.bond(undefined, undefined, undefined)`),
+                        errorTest(`minamo.core.bond(undefined, "@", undefined)`),
+                        errorTest(`minamo.core.bond(undefined, "@", "def")`),
+                        errorTest(`minamo.core.bond("abc", undefined, "def")`),
+                    ]
+                ),
+                { tag: "h3", children: "minamo.core.loopMap" },
+                makeResultTable
+                (
+                    [
+                        equalTest(`minamo.core.loopMap(i => i < 3 ? i: null)`, [0,1,2]),
+                        equalTest(`minamo.core.loopMap(i => i < 3 ? i *2: null)`, [0,2,4]),
+                        equalTest(`minamo.core.loopMap(i => i < 3 ? {i:i}: null)`, [{i:0},{i:1},{i:2}]),
+                        equalTest(`minamo.core.loopMap(i => null)`, []),
+                        errorTest(`minamo.core.loopMap(null)`),
+                        errorTest(`minamo.core.loopMap(i => true)`),
+                    ]
+                ),
+                { tag: "h3", children: "minamo.core.countMap" },
+                makeResultTable
+                (
+                    [
+                        equalTest(`minamo.core.countMap(3, "A")`, ["A","A","A"]),
+                        equalTest(`minamo.core.countMap(3, i => i)`, [0,1,2]),
+                        equalTest(`minamo.core.countMap(3, i => i *2)`, [0,2,4]),
+                        equalTest(`minamo.core.countMap(3, i => ({i:i}))`, [{i:0},{i:1},{i:2}]),
+                        equalTest(`minamo.core.countMap(0, i => i)`, []),
+                        equalTest(`minamo.core.countMap(3, null)`, [null,null,null]),
                     ]
                 ),
             ]
