@@ -271,6 +271,8 @@ var test;
                         { tag: "h2", children: "minamo.core" },
                         { tag: "h3", children: "minamo.core.exists" },
                         makeResultTable([
+                            test_1.equalTest("minamo.core.exists({})", true),
+                            test_1.equalTest("minamo.core.exists([])", true),
                             test_1.equalTest("minamo.core.exists(\"abc\")", true),
                             test_1.equalTest("minamo.core.exists(true)", true),
                             test_1.equalTest("minamo.core.exists(false)", true),
@@ -282,6 +284,8 @@ var test;
                         ]),
                         { tag: "h3", children: "minamo.core.existsOrThrow" },
                         makeResultTable([
+                            test_1.equalTest("minamo.core.existsOrThrow({})", {}),
+                            test_1.equalTest("minamo.core.existsOrThrow([])", []),
                             test_1.equalTest("minamo.core.existsOrThrow(\"abc\")", "abc"),
                             test_1.equalTest("minamo.core.existsOrThrow(true)", true),
                             test_1.equalTest("minamo.core.existsOrThrow(false)", false),
@@ -564,6 +568,21 @@ var test;
                                 test_1.equalTest("minamo.core.countMap(3, i => ({i:i}))", [{ i: 0 }, { i: 1 }, { i: 2 }]),
                                 test_1.equalTest("minamo.core.countMap(0, i => i)", []),
                                 test_1.equalTest("minamo.core.countMap(3, null)", [null, null, null]),
+                            ]),
+                            { tag: "h3", children: "minamo.core.zeroPadding" },
+                            makeResultTable([
+                                test_1.equalTest("minamo.core.zeroPadding(3, 123)", "123"),
+                                test_1.equalTest("minamo.core.zeroPadding(3, 1)", "001"),
+                                test_1.equalTest("minamo.core.zeroPadding(3, 0)", "000"),
+                                test_1.equalTest("minamo.core.zeroPadding(3, 1234)", "1234"),
+                                test_1.equalTest("minamo.core.zeroPadding(3, -12)", "-12"),
+                                test_1.equalTest("minamo.core.zeroPadding(3, -123)", "-123"),
+                                test_1.equalTest("minamo.core.zeroPadding(0, 123)", "123"),
+                                test_1.equalTest("minamo.core.zeroPadding(-1, 123)", "123"),
+                                test_1.equalTest("minamo.core.zeroPadding(5, 123.45)", "00123"),
+                                test_1.errorTest("minamo.core.zeroPadding(30, 123)"),
+                                test_1.errorTest("minamo.core.zeroPadding(20, 12345678901234567890123)"),
+                                test_1.errorTest("minamo.core.zeroPadding(20, -12345678901234567890123)"),
                             ])
                         ])]));
                     __1.minamo.dom.appendChildren(document.body, {

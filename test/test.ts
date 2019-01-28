@@ -232,6 +232,8 @@ export module test
                 makeResultTable
                 (
                     [
+                        equalTest(`minamo.core.exists({})`, true),
+                        equalTest(`minamo.core.exists([])`, true),
                         equalTest(`minamo.core.exists("abc")`, true),
                         equalTest(`minamo.core.exists(true)`, true),
                         equalTest(`minamo.core.exists(false)`, true),
@@ -246,6 +248,8 @@ export module test
                 makeResultTable
                 (
                     [
+                        equalTest(`minamo.core.existsOrThrow({})`, {}),
+                        equalTest(`minamo.core.existsOrThrow([])`, []),
                         equalTest(`minamo.core.existsOrThrow("abc")`, "abc"),
                         equalTest(`minamo.core.existsOrThrow(true)`, true),
                         equalTest(`minamo.core.existsOrThrow(false)`, false),
@@ -388,6 +392,24 @@ export module test
                         equalTest(`minamo.core.countMap(3, i => ({i:i}))`, [{i:0},{i:1},{i:2}]),
                         equalTest(`minamo.core.countMap(0, i => i)`, []),
                         equalTest(`minamo.core.countMap(3, null)`, [null,null,null]),
+                    ]
+                ),
+                { tag: "h3", children: "minamo.core.zeroPadding" },
+                makeResultTable
+                (
+                    [
+                        equalTest(`minamo.core.zeroPadding(3, 123)`, "123"),
+                        equalTest(`minamo.core.zeroPadding(3, 1)`, "001"),
+                        equalTest(`minamo.core.zeroPadding(3, 0)`, "000"),
+                        equalTest(`minamo.core.zeroPadding(3, 1234)`, "1234"),
+                        equalTest(`minamo.core.zeroPadding(3, -12)`, "-12"),
+                        equalTest(`minamo.core.zeroPadding(3, -123)`, "-123"),
+                        equalTest(`minamo.core.zeroPadding(0, 123)`, "123"),
+                        equalTest(`minamo.core.zeroPadding(-1, 123)`, "123"),
+                        equalTest(`minamo.core.zeroPadding(5, 123.45)`, "00123"),
+                        errorTest(`minamo.core.zeroPadding(30, 123)`),
+                        errorTest(`minamo.core.zeroPadding(20, 12345678901234567890123)`),
+                        errorTest(`minamo.core.zeroPadding(20, -12345678901234567890123)`),
                     ]
                 ),
             ]
