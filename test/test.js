@@ -49,6 +49,12 @@ var test;
         result.isSucceeded ? ++counts.ok : ++counts.ng;
         return result;
     };
+    var makeHeading = function (tag, text) {
+        return ({
+            tag: tag,
+            children: text,
+        });
+    };
     var makeResultTable = function (result) {
         return ({
             tag: "table",
@@ -259,7 +265,7 @@ var test;
                 case 0:
                     _b = (_a = __1.minamo.dom).appendChildren;
                     _c = [document.body];
-                    _d = [{ tag: "h1", children: document.title },
+                    _d = [makeHeading("h1", document.title),
                         {
                             tag: "p",
                             children: [
@@ -267,9 +273,9 @@ var test;
                                 { tag: "a", className: "github", href: "https://github.com/wraith13/minamo.js", children: "GitHub", },
                             ],
                         },
-                        { tag: "h2", children: "summary" },
-                        { tag: "h2", children: "minamo.core" },
-                        { tag: "h3", children: "minamo.core.exists" },
+                        makeHeading("h2", "summary"),
+                        makeHeading("h2", "minamo.core"),
+                        makeHeading("h3", "minamo.core.exists"),
                         makeResultTable([
                             test_1.equalTest("minamo.core.exists({})", true),
                             test_1.equalTest("minamo.core.exists([])", true),
@@ -282,7 +288,7 @@ var test;
                             test_1.equalTest("minamo.core.exists(null)", false),
                             test_1.equalTest("minamo.core.exists(undefined)", false),
                         ]),
-                        { tag: "h3", children: "minamo.core.existsOrThrow" },
+                        makeHeading("h3", "minamo.core.existsOrThrow"),
                         makeResultTable([
                             test_1.equalTest("minamo.core.existsOrThrow({})", {}),
                             test_1.equalTest("minamo.core.existsOrThrow([])", []),
@@ -295,7 +301,7 @@ var test;
                             test_1.errorTest("minamo.core.existsOrThrow(null)"),
                             test_1.errorTest("minamo.core.existsOrThrow(undefined)"),
                         ]),
-                        { tag: "h3", children: "minamo.core.getOrCall" },
+                        makeHeading("h3", "minamo.core.getOrCall"),
                         makeResultTable([
                             test_1.equalTest("minamo.core.getOrCall(\"abc\")", "abc"),
                             test_1.equalTest("minamo.core.getOrCall(true)", true),
@@ -314,7 +320,7 @@ var test;
                             test_1.equalTest("minamo.core.getOrCall(()=>null)", null),
                             test_1.equalTest("minamo.core.getOrCall(()=>undefined)", undefined),
                         ]),
-                        { tag: "h3", children: "minamo.core.getOrCallAsync" }];
+                        makeHeading("h3", "minamo.core.getOrCallAsync")];
                     _e = makeResultTable;
                     return [4 /*yield*/, test_1.equalTestAsync("minamo.core.getOrCallAsync(\"abc\")", "abc")];
                 case 1:
@@ -397,7 +403,7 @@ var test;
                         _e.apply(void 0, [_f.concat([
                                 _j.sent()
                             ])]),
-                        { tag: "h3", children: "minamo.core.getLast" }
+                        makeHeading("h3", "minamo.core.getLast")
                     ]);
                     _g = makeResultTable;
                     return [4 /*yield*/, test_1.equalTestAsync("minamo.core.getLast(\"abc\")", "abc")];
@@ -521,7 +527,7 @@ var test;
                             _g.apply(void 0, [_h.concat([
                                     _j.sent()
                                 ])]),
-                            { tag: "h3", children: "minamo.core.separate" },
+                            makeHeading("h3", "minamo.core.separate"),
                             makeResultTable([
                                 test_1.equalTest("minamo.core.separate(\"abcdefghi\", \"efg\")", { head: "abcd", tail: "hi" }),
                                 test_1.equalTest("minamo.core.separate(\"abc@def\", \"@\")", { head: "abc", tail: "def" }),
@@ -534,7 +540,7 @@ var test;
                                 test_1.equalTest("minamo.core.separate(\"abc@def\", null)", { head: "abc@def", tail: null }),
                                 test_1.equalTest("minamo.core.separate(\"abc@def\", undefined)", { head: "abc@def", tail: null }),
                             ]),
-                            { tag: "h3", children: "minamo.core.bond" },
+                            makeHeading("h3", "minamo.core.bond"),
                             makeResultTable([
                                 test_1.equalTest("minamo.core.bond(\"abcd\", \"efg\", \"hi\")", "abcdefghi"),
                                 test_1.equalTest("minamo.core.bond(\"abc\", \"@\", \"def\")", "abc@def"),
@@ -551,7 +557,7 @@ var test;
                                 test_1.errorTest("minamo.core.bond(undefined, \"@\", \"def\")"),
                                 test_1.errorTest("minamo.core.bond(\"abc\", undefined, \"def\")"),
                             ]),
-                            { tag: "h3", children: "minamo.core.loopMap" },
+                            makeHeading("h3", "minamo.core.loopMap"),
                             makeResultTable([
                                 test_1.equalTest("minamo.core.loopMap(i => i < 3 ? i: null)", [0, 1, 2]),
                                 test_1.equalTest("minamo.core.loopMap(i => i < 3 ? i *2: null)", [0, 2, 4]),
@@ -560,7 +566,7 @@ var test;
                                 test_1.errorTest("minamo.core.loopMap(null)"),
                                 test_1.errorTest("minamo.core.loopMap(i => true)"),
                             ]),
-                            { tag: "h3", children: "minamo.core.countMap" },
+                            makeHeading("h3", "minamo.core.countMap"),
                             makeResultTable([
                                 test_1.equalTest("minamo.core.countMap(3, \"A\")", ["A", "A", "A"]),
                                 test_1.equalTest("minamo.core.countMap(3, i => i)", [0, 1, 2]),
@@ -569,7 +575,7 @@ var test;
                                 test_1.equalTest("minamo.core.countMap(0, i => i)", []),
                                 test_1.equalTest("minamo.core.countMap(3, null)", [null, null, null]),
                             ]),
-                            { tag: "h3", children: "minamo.core.zeroPadding" },
+                            makeHeading("h3", "minamo.core.zeroPadding"),
                             makeResultTable([
                                 test_1.equalTest("minamo.core.zeroPadding(3, 123)", "123"),
                                 test_1.equalTest("minamo.core.zeroPadding(3, 1)", "001"),
@@ -628,6 +634,19 @@ var test;
                     if (counts.ng) {
                         document.title = "(" + counts.ng + ") " + document.title;
                     }
+                    setTimeout(function () {
+                        var hashRaw = __1.minamo.core.separate(location.href, "#").tail;
+                        if (hashRaw) {
+                            var hash_1 = decodeURIComponent(hashRaw);
+                            var target = Array.from(document.body.children).filter(function (i) { return i.textContent === hash_1; })[0];
+                            if (target) {
+                                document.body.scrollTop = target.offsetTop;
+                            }
+                            else {
+                                console.error("Not found hash " + hash_1);
+                            }
+                        }
+                    }, 0);
                     return [2 /*return*/];
             }
         });

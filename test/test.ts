@@ -21,6 +21,13 @@ export module test
         result.isSucceeded ? ++counts.ok: ++counts.ng;
         return result;
     }
+    const makeHeading = (tag: string, text: string) =>
+    (
+        {
+            tag,
+            children: text,
+        }
+    );
     const makeResultTable = (result: TestResult[]) =>
     (
         {
@@ -217,7 +224,7 @@ export module test
         (
             document.body,
             [
-                { tag: "h1", children: document.title },
+                makeHeading("h1", document.title),
                 {
                     tag: "p",
                     children:
@@ -226,9 +233,9 @@ export module test
                         { tag: "a", className: "github", href: "https://github.com/wraith13/minamo.js", children: "GitHub", },
                     ],
                 },
-                { tag: "h2", children: "summary" },
-                { tag: "h2", children: "minamo.core" },
-                { tag: "h3", children: "minamo.core.exists" },
+                makeHeading("h2", "summary"),
+                makeHeading("h2", "minamo.core"),
+                makeHeading("h3", "minamo.core.exists"),
                 makeResultTable
                 (
                     [
@@ -244,7 +251,7 @@ export module test
                         equalTest(`minamo.core.exists(undefined)`, false),
                     ]
                 ),
-                { tag: "h3", children: "minamo.core.existsOrThrow" },
+                makeHeading("h3", "minamo.core.existsOrThrow"),
                 makeResultTable
                 (
                     [
@@ -260,7 +267,7 @@ export module test
                         errorTest(`minamo.core.existsOrThrow(undefined)`),
                     ]
                 ),
-                { tag: "h3", children: "minamo.core.getOrCall" },
+                makeHeading("h3", "minamo.core.getOrCall"),
                 makeResultTable
                 (
                     [
@@ -282,7 +289,7 @@ export module test
                         equalTest(`minamo.core.getOrCall(()=>undefined)`, undefined),
                     ]
                 ),
-                { tag: "h3", children: "minamo.core.getOrCallAsync" },
+                makeHeading("h3", "minamo.core.getOrCallAsync"),
                 makeResultTable
                 (
                     [
@@ -304,7 +311,7 @@ export module test
                         await equalTestAsync(`minamo.core.getOrCallAsync(async ()=>undefined)`, undefined),
                     ]
                 ),
-                { tag: "h3", children: "minamo.core.getLast" },
+                makeHeading("h3", "minamo.core.getLast"),
                 makeResultTable
                 (
                     [
@@ -334,7 +341,7 @@ export module test
                         await equalTestAsync(`minamo.core.getLast([123,undefined])`, undefined),
                     ]
                 ),
-                { tag: "h3", children: "minamo.core.separate" },
+                makeHeading("h3", "minamo.core.separate"),
                 makeResultTable
                 (
                     [
@@ -350,7 +357,7 @@ export module test
                         equalTest(`minamo.core.separate("abc@def", undefined)`, { head: "abc@def", tail: null }),
                     ]
                 ),
-                { tag: "h3", children: "minamo.core.bond" },
+                makeHeading("h3", "minamo.core.bond"),
                 makeResultTable
                 (
                     [
@@ -370,7 +377,7 @@ export module test
                         errorTest(`minamo.core.bond("abc", undefined, "def")`),
                     ]
                 ),
-                { tag: "h3", children: "minamo.core.loopMap" },
+                makeHeading("h3", "minamo.core.loopMap"),
                 makeResultTable
                 (
                     [
@@ -382,7 +389,7 @@ export module test
                         errorTest(`minamo.core.loopMap(i => true)`),
                     ]
                 ),
-                { tag: "h3", children: "minamo.core.countMap" },
+                makeHeading("h3", "minamo.core.countMap"),
                 makeResultTable
                 (
                     [
@@ -394,7 +401,7 @@ export module test
                         equalTest(`minamo.core.countMap(3, null)`, [null,null,null]),
                     ]
                 ),
-                { tag: "h3", children: "minamo.core.zeroPadding" },
+                makeHeading("h3", "minamo.core.zeroPadding"),
                 makeResultTable
                 (
                     [
@@ -466,5 +473,26 @@ export module test
         {
             document.title = `(${counts.ng}) ${document.title}`
         }
+        setTimeout
+        (
+            ()=>
+            {
+                const hashRaw = minamo.core.separate(location.href, "#").tail;
+                if (hashRaw)
+                {
+                    const hash = decodeURIComponent(hashRaw);
+                    const target = <HTMLElement>Array.from(document.body.children).filter(i => i.textContent === hash)[0];
+                    if (target)
+                    {
+                        document.body.scrollTop = target.offsetTop;
+                    }
+                    else
+                    {
+                        console.error(`Not found hash ${hash}`);
+                    }
+                }
+            },
+            0
+        );
     };
 }
