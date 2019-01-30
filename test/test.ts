@@ -60,7 +60,7 @@ export module test
             ].concat
             (
                 result
-                    .map(i => resultCount(i))
+                    .map(resultCount)
                     .map
                     (
                         i =>

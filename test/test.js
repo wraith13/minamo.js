@@ -82,7 +82,7 @@ var test;
                     ],
                 },
             ].concat(result
-                .map(function (i) { return resultCount(i); })
+                .map(resultCount)
                 .map(function (i) {
                 return ({
                     tag: "tr",
