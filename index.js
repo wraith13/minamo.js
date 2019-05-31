@@ -369,7 +369,25 @@ var minamo;
             var padding = 0 < paddingLength ? "00000000000000000000".substr(-paddingLength) : "";
             return "" + sign + padding + core;
         };
+        core_1.NYI = function (_) {
+            if (_ === void 0) { _ = null; }
+            throw new Error("Not Yet Implement!");
+        };
     })(core = minamo.core || (minamo.core = {}));
+    var environment;
+    (function (environment) {
+        environment.isIE = function () { return core.NYI(false); };
+        environment.isEdge = function () { return core.NYI(false); };
+        environment.isSafari = function () { return core.NYI(false); };
+        environment.isFirefox = function () { return core.NYI(false); };
+        environment.isChrome = function () { return core.NYI(false); };
+        environment.isPC = function () { return core.NYI(false); };
+        environment.isWindows = function () { return core.NYI(false); };
+        environment.isMac = function () { return core.NYI(false); };
+        environment.isLinux = function () { return core.NYI(false); };
+        environment.isiOs = function () { return core.NYI(false); };
+        environment.isiAndroid = function () { return core.NYI(false); };
+    })(environment = minamo.environment || (minamo.environment = {}));
     var cookie;
     (function (cookie) {
         cookie.defaultMaxAge = 30 * 24 * 60 * 60;

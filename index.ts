@@ -345,6 +345,21 @@ export module minamo
             const padding = 0 < paddingLength ? "00000000000000000000".substr(-paddingLength): "";
             return `${sign}${padding}${core}`;
         }
+        export const NYI = <T>(_: T = null): T => { throw new Error("Not Yet Implement!"); };
+    }
+    export module environment
+    {
+        export const isIE = (): boolean => core.NYI(false);
+        export const isEdge = (): boolean => core.NYI(false);
+        export const isSafari = (): boolean => core.NYI(false);
+        export const isFirefox = (): boolean => core.NYI(false);
+        export const isChrome = (): boolean => core.NYI(false);
+        export const isPC = (): boolean => core.NYI(false);
+        export const isWindows = (): boolean => core.NYI(false);
+        export const isMac = (): boolean => core.NYI(false);
+        export const isLinux = (): boolean => core.NYI(false);
+        export const isiOs = (): boolean => core.NYI(false);
+        export const isiAndroid = (): boolean => core.NYI(false);
     }
     export module cookie
     {
