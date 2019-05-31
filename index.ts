@@ -700,7 +700,7 @@ export module minamo
             }
             return set(document.createElement(arg.tag), arg);
         };
-        export const set = (element: Element, arg: any): Node =>
+        export const set = <T extends Element>(element: T, arg: any): T =>
         {
             core.objectForEach
             (
