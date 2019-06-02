@@ -661,15 +661,31 @@ var minamo;
     })(file = minamo.file || (minamo.file = {}));
     var dom;
     (function (dom) {
-        dom.make = function (arg) {
+        function make(arg, level) {
             if (arg instanceof Node) {
                 return arg;
             }
             if ("string" === core.practicalTypeof(arg)) {
                 return document.createTextNode(arg);
             }
+            if (arg.prototype) {
+                var tag_1 = arg.name.replace(/HTML(.*)Element/, "$1".toLowerCase());
+                switch (tag_1) {
+                    case "anchor":
+                        tag_1 = "a";
+                        break;
+                    case "heading":
+                        tag_1 = "h" + level;
+                        break;
+                }
+                return function (arg2) { return dom.set(document.createElement(tag_1), arg2); };
+            }
+            if (arg.outerHTML) {
+                return make(HTMLDivElement)({ innerHTML: arg.outerHTML }).firstChild;
+            }
             return dom.set(document.createElement(arg.tag), arg);
-        };
+        }
+        dom.make = make;
         dom.set = function (element, arg) {
             core.objectForEach(arg, function (key, value) {
                 switch (key) {
@@ -697,7 +713,7 @@ var minamo;
                 core.objectForEach(arg.attributes, function (key, value) { return element.setAttribute(key, value); });
             }
             if (undefined !== arg.children) {
-                core.arrayOrToArray(arg.children).forEach(function (i) { return element.appendChild(dom.make(i)); });
+                core.arrayOrToArray(arg.children).forEach(function (i) { return element.appendChild(make(i)); });
             }
             if (undefined !== arg.eventListener) {
                 core.objectForEach(arg.eventListener, function (key, value) { return element.addEventListener(key, value); });
@@ -723,8 +739,8 @@ var minamo;
         };
         dom.appendChildren = function (parent, newChildren, refChild) {
             core.singleOrArray(newChildren, function (i) { return undefined === refChild ?
-                parent.appendChild(dom.make(i)) :
-                parent.insertBefore(dom.make(i), refChild); }, function (a) { return a.forEach(function (i) { return dom.appendChildren(parent, i, refChild); }); });
+                parent.appendChild(make(i)) :
+                parent.insertBefore(make(i), refChild); }, function (a) { return a.forEach(function (i) { return dom.appendChildren(parent, i, refChild); }); });
             return parent;
         };
         dom.replaceChildren = function (parent, newChildren, isRemoveChild, refChild) {
