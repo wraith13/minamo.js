@@ -662,6 +662,7 @@ var minamo;
     var dom;
     (function (dom) {
         function make(arg, level) {
+            core.existsOrThrow(arg);
             if (arg instanceof Node) {
                 return arg;
             }
