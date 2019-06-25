@@ -671,12 +671,22 @@ var minamo;
             }
             if (arg.prototype) {
                 var tag_1 = arg.name.replace(/HTML(.*)Element/, "$1".toLowerCase());
+                HTMLDataElement;
                 switch (tag_1) {
                     case "anchor":
                         tag_1 = "a";
                         break;
                     case "heading":
                         tag_1 = "h" + level;
+                        break;
+                    case "dlist":
+                        tag_1 = "dl";
+                        break;
+                    case "olist":
+                        tag_1 = "ol";
+                        break;
+                    case "ulist":
+                        tag_1 = "ol";
                         break;
                 }
                 return function (arg2) { return dom.set(document.createElement(tag_1), arg2); };
