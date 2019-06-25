@@ -707,7 +707,6 @@ export module minamo
             if (arg.prototype)
             {
                 let tag = arg.name.replace(/HTML(.*)Element/, "$1".toLowerCase());
-                HTMLDataElement
                 switch(tag)
                 {
                 case "anchor":

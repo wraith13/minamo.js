@@ -671,7 +671,6 @@ var minamo;
             }
             if (arg.prototype) {
                 var tag_1 = arg.name.replace(/HTML(.*)Element/, "$1".toLowerCase());
-                HTMLDataElement;
                 switch (tag_1) {
                     case "anchor":
                         tag_1 = "a";
