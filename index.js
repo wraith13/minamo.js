@@ -92,6 +92,12 @@ var minamo;
                 }
                 core_1.recursiveAssign(target[key], value);
             }
+            else if ("array" === core_1.practicalTypeof(value)) {
+                if (undefined === target[key]) {
+                    target[key] = [];
+                }
+                core_1.recursiveAssign(target[key], value);
+            }
             else {
                 target[key] = value;
             }

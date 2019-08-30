@@ -42,6 +42,15 @@ export module minamo
                     recursiveAssign(target[key], value);
                 }
                 else
+                if ("array" === practicalTypeof(value))
+                {
+                    if (undefined === target[key])
+                    {
+                        target[key] = [ ];
+                    }
+                    recursiveAssign(target[key], value);
+                }
+                else
                 {
                     target[key] = value;
                 }
