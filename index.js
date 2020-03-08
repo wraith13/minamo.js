@@ -13,10 +13,11 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -635,8 +636,12 @@ var minamo;
     })(sessionStorage = minamo.sessionStorage || (minamo.sessionStorage = {}));
     var http;
     (function (http) {
-        http.request = function (method, url, body) { return new Promise(function (resolve, reject) {
+        var _this = this;
+        http.request = function (method, url, body, headers) { return new Promise(function (resolve, reject) {
             var request = new XMLHttpRequest();
+            if (headers) {
+                Object.keys(headers).map(function (key) { return request.setRequestHeader(key, headers[key]); });
+            }
             request.open(method, url, true);
             request.onreadystatechange = function () {
                 if (4 === request.readyState) {
@@ -653,8 +658,24 @@ var minamo;
             };
             request.send(body);
         }); };
-        http.get = function (url) { return http.request("GET", url); };
-        http.post = function (url, body) { return http.request("POST", url, body); };
+        http.get = function (url, headers) { return http.request("GET", url, undefined, headers); };
+        http.post = function (url, body, headers) { return http.request("POST", url, body, headers); };
+        http.getJson = function (url, headers) { return __awaiter(_this, void 0, void 0, function () { var _a, _b; return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _b = (_a = JSON).parse;
+                    return [4 /*yield*/, http.get(url, headers)];
+                case 1: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
+            }
+        }); }); };
+        http.postJson = function (url, body, headers) { return __awaiter(_this, void 0, void 0, function () { var _a, _b; return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _b = (_a = JSON).parse;
+                    return [4 /*yield*/, http.post(url, body, headers)];
+                case 1: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
+            }
+        }); }); };
     })(http = minamo.http || (minamo.http = {}));
     var file;
     (function (file_1) {
