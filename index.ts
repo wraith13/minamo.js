@@ -703,11 +703,17 @@ export module minamo
     
     export module dom
     {
-        export function make<T extends Node>(node: T): T;
-        export function make(text: string): Text;
-        export function make<T extends Element>(constructor: { new (): T, prototype: T }): (arg: any) => T;
-        export function make(constructor: { new (): HTMLHeadingElement, prototype: HTMLHeadingElement }, level: number): (arg: any) => HTMLHeadingElement;
-        export function make(arg: any): Node;
+        export type Source =
+            object |
+            {
+                outerHTML: string,
+            } |
+            string |
+            Node |
+            Source[];
+        export function make<T extends Element>(constructor: { new (): T, prototype: T }): (arg: object) => T;
+        export function make(constructor: { new (): HTMLHeadingElement, prototype: HTMLHeadingElement }, level: number): (arg: object) => HTMLHeadingElement;
+        export function make(arg: Source): Node;
         export function make(arg: any, level?: number): any
         {
             core.existsOrThrow(arg);
@@ -717,7 +723,7 @@ export module minamo
             }
             if ("string" === core.practicalTypeof(arg))
             {
-                return document.createTextNode(arg);
+                return document.createTextNode(<string>arg);
             }
             if (arg.prototype)
             {
@@ -746,7 +752,7 @@ export module minamo
             {
                 return make(HTMLDivElement)({innerHTML: arg.outerHTML}).firstChild;
             }
-        return set(document.createElement(arg.tag), arg);
+            return set(document.createElement(arg.tag), arg);
         }
         export const set = <T extends Element>(element: T, arg: any): T =>
         {
@@ -787,7 +793,7 @@ export module minamo
             }
             if (undefined !== arg.children)
             {
-                core.arrayOrToArray(arg.children).forEach((i: any) => element.appendChild(make(i)));
+                core.arrayOrToArray(arg.children).forEach((i: Source) => element.appendChild(make(i)));
             }
             if (undefined !== arg.eventListener)
             {
@@ -821,7 +827,7 @@ export module minamo
             }
             return parent;
         };
-        export const appendChildren = (parent: Element, newChildren: any, refChild?: Node): Element =>
+        export const appendChildren = (parent: Element, newChildren: Source, refChild?: Node): Element =>
         {
             core.singleOrArray
             (
