@@ -81,7 +81,7 @@ export module minamo
                 throw new ReferenceError("minamo.core.existsOrThrow() encountered a unexist value.");
             }
             return i;
-        }
+        };
         export class Url
         {
             constructor(private url: string)
@@ -123,7 +123,7 @@ export module minamo
             (
                 objectToArray(this.rawParams, (k, v) => bond(k, "=", v))
                     .join("&")
-            );
+            )
 
             setRawParamsString = (rawParamsString: string) =>
             {
@@ -142,7 +142,7 @@ export module minamo
                 return this.updateParams();
             }
             setParams = (params: {[key:string]:string}) =>
-                this.setRawParams(objectMap(params, (_key, value) => encodeURIComponent(value)));
+                this.setRawParams(objectMap(params, (_key, value) => encodeURIComponent(value)))
 
             toString = ()=> this.url;
         }
@@ -153,12 +153,12 @@ export module minamo
             {
                 this.members.push(member);
                 return this;
-            };
+            }
             remove = (member: (value: ValueT, options?: { [key:string]: any }) => Promise<void>): Listener<ValueT> =>
             {
                 this.members = this.members.filter(i => member !== i);
                 return this;
-            };
+            }
             clear = (): Listener<ValueT> =>
             {
                 this.members = [];
@@ -167,8 +167,8 @@ export module minamo
             fireAsync = async (value: ValueT, options?: { }): Promise<void> =>
             {
                 await Promise.all(this.members.map(async i => await i(value, options)));
-            };
-        };
+            }
+        }
         export class Property<ValueT>
         {
             constructor(private updater?: () => Promise<ValueT>) { }
@@ -286,7 +286,7 @@ export module minamo
                 head: text,
                 tail: null,
             };
-        }
+        };
         export const bond = (head: string, separator: string, tail: string) =>
             exists(tail) ?
                 `${existsOrThrow(head)}${existsOrThrow(separator)}${tail}`:
@@ -353,7 +353,7 @@ export module minamo
             const paddingLength = length -(sign.length + core.length);
             const padding = 0 < paddingLength ? "00000000000000000000".substr(-paddingLength): "";
             return `${sign}${padding}${core}`;
-        }
+        };
         export const NYI = <T>(_: T = null): T => { throw new Error("Not Yet Implement!"); };
     }
     export module environment
@@ -441,7 +441,7 @@ export module minamo
             (
                 cookie.getOrNull(core.getOrCall(this.key)),
                 { onLoadAsync: true }
-            );
+            )
             loadOrUpdateAsync = async (): Promise<ValueT> =>
             {
                 let result = await this.loadAsync();
@@ -450,7 +450,7 @@ export module minamo
                     result = await this.updateAsync();
                 }
                 return result;
-            };
+            }
         }
         export class AutoSaveProperty<ValueT> extends Property<ValueT>
         {
@@ -498,7 +498,7 @@ export module minamo
         {
             const rawValue = getRaw(key);
             return  core.exists(rawValue) ? <ValueT>JSON.parse(decodeURIComponent(rawValue)): null;
-        }
+        };
 
         export class Property<ValueT> extends core.Property<ValueT>
         {
@@ -524,7 +524,7 @@ export module minamo
             (
                 cookie.getOrNull(core.getOrCall(this.key)),
                 { onLoadAsync: true }
-            );
+            )
             loadOrUpdateAsync = async (): Promise<ValueT> =>
             {
                 let result = await this.loadAsync();
@@ -533,7 +533,7 @@ export module minamo
                     result = await this.updateAsync();
                 }
                 return result;
-            };
+            }
         }
         export class AutoSaveProperty<ValueT> extends Property<ValueT>
         {
@@ -581,7 +581,7 @@ export module minamo
         {
             const rawValue = getRaw(key);
             return  core.exists(rawValue) ? <ValueT>JSON.parse(decodeURIComponent(rawValue)): null;
-        }
+        };
 
         export class Property<ValueT> extends core.Property<ValueT>
         {
@@ -607,7 +607,7 @@ export module minamo
             (
                 cookie.getOrNull(core.getOrCall(this.key)),
                 { onLoadAsync: true }
-            );
+            )
             loadOrUpdateAsync = async (): Promise<ValueT> =>
             {
                 let result = await this.loadAsync();
@@ -616,7 +616,7 @@ export module minamo
                     result = await this.updateAsync();
                 }
                 return result;
-            };
+            }
         }
         export class AutoSaveProperty<ValueT> extends Property<ValueT>
         {

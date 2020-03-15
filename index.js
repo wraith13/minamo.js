@@ -205,7 +205,6 @@ var minamo;
             return Listener;
         }());
         core_1.Listener = Listener;
-        ;
         var Property = /** @class */ (function () {
             function Property(updater) {
                 var _this = this;
