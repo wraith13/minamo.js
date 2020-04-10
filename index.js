@@ -638,10 +638,11 @@ var minamo;
         var _this = this;
         http.request = function (method, url, body, headers) { return new Promise(function (resolve, reject) {
             var request = new XMLHttpRequest();
-            if (headers) {
-                Object.keys(headers).map(function (key) { return request.setRequestHeader(key, headers[key]); });
-            }
             request.open(method, url, true);
+            if (headers) {
+                console.log("headers: " + JSON.stringify(headers));
+                Object.keys(headers).forEach(function (key) { return request.setRequestHeader(key, headers[key]); });
+            }
             request.onreadystatechange = function () {
                 if (4 === request.readyState) {
                     if (200 <= request.status && request.status < 300) {
@@ -655,6 +656,7 @@ var minamo;
                     }
                 }
             };
+            console.log("body: " + JSON.stringify(body));
             request.send(body);
         }); };
         http.get = function (url, headers) { return http.request("GET", url, undefined, headers); };

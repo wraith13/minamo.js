@@ -652,11 +652,12 @@ export module minamo
             (resolve, reject) =>
             {
                 const request = new XMLHttpRequest();
+                request.open(method, url, true);
                 if (headers)
                 {
-                    Object.keys(headers).map(key => request.setRequestHeader(key, headers[key]));
+                    console.log(`headers: ${JSON.stringify(headers)}`);
+                    Object.keys(headers).forEach(key => request.setRequestHeader(key, headers[key]));
                 }
-                request.open(method, url, true);
                 request.onreadystatechange = function()
                 {
                     if (4 === request.readyState)
@@ -677,6 +678,7 @@ export module minamo
                         }
                     }
                 };
+                console.log(`body: ${JSON.stringify(body)}`);
                 request.send(body);
             }
         );
