@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.test = void 0;
 var __1 = require("..");
 var test;
 (function (test_1) {
@@ -276,8 +277,7 @@ var test;
                         },
                         makeHeading("h2", "summary"),
                         makeHeading("h2", "minamo.core"),
-                        makeHeading("h3", "minamo.core.exists"),
-                        makeResultTable([
+                        makeHeading("h3", "minamo.core.exists"), makeResultTable([
                             test_1.equalTest("minamo.core.exists({})", true),
                             test_1.equalTest("minamo.core.exists([])", true),
                             test_1.equalTest("minamo.core.exists(\"abc\")", true),
@@ -288,9 +288,7 @@ var test;
                             test_1.equalTest("minamo.core.exists(\"\")", true),
                             test_1.equalTest("minamo.core.exists(null)", false),
                             test_1.equalTest("minamo.core.exists(undefined)", false),
-                        ]),
-                        makeHeading("h3", "minamo.core.existsOrThrow"),
-                        makeResultTable([
+                        ]), makeHeading("h3", "minamo.core.existsOrThrow"), makeResultTable([
                             test_1.equalTest("minamo.core.existsOrThrow({})", {}),
                             test_1.equalTest("minamo.core.existsOrThrow([])", []),
                             test_1.equalTest("minamo.core.existsOrThrow(\"abc\")", "abc"),
@@ -301,9 +299,7 @@ var test;
                             test_1.equalTest("minamo.core.existsOrThrow(\"\")", ""),
                             test_1.errorTest("minamo.core.existsOrThrow(null)"),
                             test_1.errorTest("minamo.core.existsOrThrow(undefined)"),
-                        ]),
-                        makeHeading("h3", "minamo.core.getOrCall"),
-                        makeResultTable([
+                        ]), makeHeading("h3", "minamo.core.getOrCall"), makeResultTable([
                             test_1.equalTest("minamo.core.getOrCall(\"abc\")", "abc"),
                             test_1.equalTest("minamo.core.getOrCall(true)", true),
                             test_1.equalTest("minamo.core.getOrCall(false)", false),
@@ -320,8 +316,7 @@ var test;
                             test_1.equalTest("minamo.core.getOrCall(()=>\"\")", ""),
                             test_1.equalTest("minamo.core.getOrCall(()=>null)", null),
                             test_1.equalTest("minamo.core.getOrCall(()=>undefined)", undefined),
-                        ]),
-                        makeHeading("h3", "minamo.core.getOrCallAsync")];
+                        ]), makeHeading("h3", "minamo.core.getOrCallAsync")];
                     _e = makeResultTable;
                     return [4 /*yield*/, test_1.equalTestAsync("minamo.core.getOrCallAsync(\"abc\")", "abc")];
                 case 1:

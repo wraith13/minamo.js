@@ -49,6 +49,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.minamo = void 0;
 var minamo;
 (function (minamo) {
     var core;
@@ -751,7 +752,7 @@ var minamo;
                 core.objectForEach(arg.attributes, function (key, value) { return element.setAttribute(key, value); });
             }
             if (undefined !== arg.children) {
-                core.arrayOrToArray(arg.children).forEach(function (i) { return element.appendChild(make(i)); });
+                core.arrayOrToArray(arg.children).forEach(function (i) { return core.arrayOrToArray(i).forEach(function (j) { return element.appendChild(make(j)); }); });
             }
             if (undefined !== arg.eventListener) {
                 core.objectForEach(arg.eventListener, function (key, value) { return element.addEventListener(key, value); });
