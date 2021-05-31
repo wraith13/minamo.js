@@ -27,7 +27,7 @@ export module minamo
                 console.error(`🚫 ${title}: ${err}`);
             }
         };
-        export const simpleDeepCopy = (source: object): object => JSON.parse(JSON.stringify(source));
+        export const simpleDeepCopy = <T>(source: T): T => JSON.parse(JSON.stringify(source)) as T;
         export const recursiveAssign = (target: object, source: object): void => objectForEach
         (
             source,
