@@ -797,14 +797,41 @@ export module minamo
     
     export module dom
     {
-        export type Source =
-            object |
+        export type AlphaSource = string | Node;
+        export type ObjectSource = { [key: string]: ((event: Event) => unknown) | AlphaSource | ObjectSource | (AlphaSource | ObjectSource)[] };
+        export type PureSource =
             {
                 outerHTML: string,
             } |
-            string |
-            Node |
-            Source[];
+            string | Node | ObjectSource;
+        // export type Source = PureSource | PureSource[] | Source[]; 本当はこの定義を使いたいがユーザーコード上の型判定が残念な事になり、正しく指定されていてもエラーになる。
+        export type Source = PureSource | PureSource[];
+        export const regulate = (source: Source | Source[] | (Source | Source[])[]): Source =>
+        {
+            if (Array.isArray(source))
+            {
+                let result = [];
+                source.forEach
+                (
+                    i =>
+                    {
+                        if (Array.isArray(i))
+                        {
+                            result = result.concat(regulate(i));
+                        }
+                        else
+                        {
+                            result.push(i);
+                        }
+                    }
+                );
+                return result;
+            }
+            else
+            {
+                return source;
+            }
+        };
         export function make<T extends Element>(constructor: { new (): T, prototype: T }): (arg: object) => T;
         export function make(constructor: { new (): HTMLHeadingElement, prototype: HTMLHeadingElement }, level: number): (arg: object) => HTMLHeadingElement;
         export function make(arg: Source): Node;
