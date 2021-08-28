@@ -797,14 +797,14 @@ export module minamo
     
     export module dom
     {
-        export type AlphaSource =
+        type AlphaSource =
             {
                 outerHTML: string,
             } |
             string |
             Node;
-        export type ObjectSource = { [key: string]: ((event: Event) => unknown) | AlphaSource | ObjectSource | (AlphaSource | ObjectSource | ObjectSource[] | ((AlphaSource | ObjectSource | ObjectSource[])[]))[] };
-        export type Source = AlphaSource | ObjectSource | (AlphaSource | ObjectSource | ObjectSource[] | ((AlphaSource | ObjectSource | ObjectSource[])[]))[];
+        export type ObjectSource = { [key: string]: ((event: Event) => unknown) | Source };
+        export type Source = AlphaSource | ObjectSource | Source[];
         export function make<T extends Element>(constructor: { new (): T, prototype: T }): (arg: object) => T;
         export function make(constructor: { new (): HTMLHeadingElement, prototype: HTMLHeadingElement }, level: number): (arg: object) => HTMLHeadingElement;
         export function make(arg: Source): Node;
