@@ -803,7 +803,13 @@ export module minamo
             } |
             string |
             Node;
-        export type ObjectSource = { [key: string]: ((event: Event) => unknown) | Source };
+        export type ObjectSource = { [key: string]: ((event: Event) => unknown) | Source } &
+        {
+            tag: string,
+            className?: string,
+            children?: Source,
+            onclick?: (event: MouseEvent) => unknown,
+        };
         export type Source = AlphaSource | ObjectSource | Source[];
         export function make<T extends Element>(constructor: { new (): T, prototype: T }): (arg: object) => T;
         export function make(constructor: { new (): HTMLHeadingElement, prototype: HTMLHeadingElement }, level: number): (arg: object) => HTMLHeadingElement;
