@@ -964,5 +964,80 @@ export module minamo
             appendChildren(parent, newChildren, refChild);
             return parent;
         };
+        export const getElementsByClassName = <T extends Element>(parent: Document | Element, className: string) =>
+            Array.from(parent.getElementsByClassName(className)) as T[];
+        export const getDivsByClassName = (parent: Document | Element, className: string) =>
+            getElementsByClassName<HTMLDivElement>(parent, className);
+        export const getSpansByClassName = (parent: Document | Element, className: string) =>
+            getElementsByClassName<HTMLSpanElement>(parent, className);
+        export const getButtonsByClassName = (parent: Document | Element, className: string) =>
+            getElementsByClassName<HTMLButtonElement>(parent, className);
+        export const getChildNodes = <T extends ChildNode>(parent: Node) =>
+            Array.from(parent.childNodes) as T[];
+        export const setProperty = <T, U>(object: T, key: string, value: U) =>
+        {
+            const isUpdate = value !== object[key];
+            if (isUpdate)
+            {
+                object[key] = value;
+            }
+            const result =
+            {
+                object,
+                key,
+                value,
+                isUpdate,
+            };
+            return result;
+        };
+        export const removeCSSStyleProperty = <T extends CSSStyleDeclaration>(object: T, key: string) =>
+        {
+            const isUpdate = undefined !== object[key];
+            if (isUpdate)
+            {
+                object.removeProperty(key);
+            }
+            const result =
+            {
+                object,
+                key,
+                isUpdate,
+            };
+            return result;
+        };
+        export const addCSSClass = <T extends Element>(element: T, className: string) =>
+        {
+            const isUpdate = ! element.classList.contains(className);
+            if (isUpdate)
+            {
+                element.classList.add(className);
+            }
+            const result =
+            {
+                element,
+                className,
+                isUpdate,
+            };
+            return result;
+        };
+        export const removeCSSClass = <T extends Element>(element: T, className: string) =>
+        {
+            const isUpdate = element.classList.contains(className);
+            if (isUpdate)
+            {
+                element.classList.remove(className);
+            }
+            const result =
+            {
+                element,
+                className,
+                isUpdate,
+            };
+            return result;
+        };
+        export const toggleCSSClass = <T extends Element>(element: T, className: string, toggle: boolean) =>
+            toggle ?
+                addCSSClass(element, className):
+                removeCSSClass(element, className);
     }
 }
