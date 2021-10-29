@@ -578,21 +578,40 @@ export module minamo
             window.localStorage.setItem(key, value);
             return value;
         };
-        export const set = <ValueT>(key: string, value: ValueT): ValueT =>
+        /**
+         * @deprecated User `set2()` instead.
+         */
+        export const set = <ValueT>(key: string, value: ValueT): ValueT => // 非推奨
         {
             setRaw(key, encodeURIComponent(JSON.stringify(value)));
+            return value;
+        };
+        export const set2 = <ValueT>(key: string, value: ValueT): ValueT =>
+        {
+            setRaw(key, JSON.stringify(value));
             return value;
         };
         export const remove = (key: string) => window.localStorage.removeItem(key);
         export const getRaw = (key: string): string => window.localStorage.getItem(key);
 
-        export const getOrNull = <ValueT>(key: string): ValueT =>
+        /**
+         * @deprecated User `getOrNull2()` instead.
+         */
+         export const getOrNull = <ValueT>(key: string): ValueT => // 非推奨
         {
             const rawValue = getRaw(key);
             return  core.exists(rawValue) ? <ValueT>JSON.parse(decodeURIComponent(rawValue)): null;
         };
+        export const getOrNull2 = <ValueT>(key: string): ValueT =>
+        {
+            const rawValue = getRaw(key);
+            return  core.exists(rawValue) ? <ValueT>JSON.parse(rawValue): null;
+        };
 
-        export class Property<ValueT> extends core.Property<ValueT>
+        /**
+         * @deprecated
+         */
+         export class Property<ValueT> extends core.Property<ValueT> // 非推奨
         {
             private key: string | (() => string);
             constructor
@@ -627,7 +646,10 @@ export module minamo
                 return result;
             }
         }
-        export class AutoSaveProperty<ValueT> extends Property<ValueT>
+        /**
+         * @deprecated
+         */
+         export class AutoSaveProperty<ValueT> extends Property<ValueT>
         {
             constructor
             (
@@ -661,21 +683,40 @@ export module minamo
             window.sessionStorage.setItem(key, value);
             return value;
         };
-        export const set = <ValueT>(key: string, value: ValueT): ValueT =>
+        /**
+         * @deprecated User `set2()` instead.
+         */
+         export const set = <ValueT>(key: string, value: ValueT): ValueT =>
         {
             setRaw(key, encodeURIComponent(JSON.stringify(value)));
+            return value;
+        };
+        export const set2 = <ValueT>(key: string, value: ValueT): ValueT =>
+        {
+            setRaw(key, JSON.stringify(value));
             return value;
         };
         export const remove = (key: string) => window.sessionStorage.removeItem(key);
         export const getRaw = (key: string): string => window.sessionStorage.getItem(key);
 
-        export const getOrNull = <ValueT>(key: string): ValueT =>
+        /**
+         * @deprecated User `getOrNull2()` instead.
+         */
+         export const getOrNull = <ValueT>(key: string): ValueT =>
         {
             const rawValue = getRaw(key);
             return  core.exists(rawValue) ? <ValueT>JSON.parse(decodeURIComponent(rawValue)): null;
         };
+        export const getOrNull2 = <ValueT>(key: string): ValueT =>
+        {
+            const rawValue = getRaw(key);
+            return  core.exists(rawValue) ? <ValueT>JSON.parse(rawValue): null;
+        };
 
-        export class Property<ValueT> extends core.Property<ValueT>
+        /**
+         * @deprecated
+         */
+         export class Property<ValueT> extends core.Property<ValueT>
         {
             private key: string | (() => string);
             constructor
@@ -710,7 +751,10 @@ export module minamo
                 return result;
             }
         }
-        export class AutoSaveProperty<ValueT> extends Property<ValueT>
+        /**
+         * @deprecated
+         */
+         export class AutoSaveProperty<ValueT> extends Property<ValueT>
         {
             constructor
             (
@@ -739,7 +783,7 @@ export module minamo
 
     export module http
     {
-        export const request = (method: string, url: string, body?: Document | BodyInit | null, headers?: { [key: string]: string}): Promise<string> => new Promise<string>
+        export const request = (method: string, url: string, body?: Document | XMLHttpRequestBodyInit, headers?: { [key: string]: string}): Promise<string> => new Promise<string>
         (
             (resolve, reject) =>
             {
@@ -776,9 +820,9 @@ export module minamo
         );
 
         export const get = (url : string, headers?: { [key: string]: string}): Promise<string> => request("GET", url, undefined, headers);
-        export const post = (url : string, body?: Document | BodyInit | null, headers?: { [key: string]: string}): Promise<string> => request("POST", url, body, headers);
+        export const post = (url : string, body?: Document | XMLHttpRequestBodyInit, headers?: { [key: string]: string}): Promise<string> => request("POST", url, body, headers);
         export const getJson = async <T>(url : string, headers?: { [key: string]: string}): Promise<T> => <T>JSON.parse(await get(url, headers));
-        export const postJson = async <T>(url : string, body?: Document | BodyInit | null, headers?: { [key: string]: string}): Promise<T> => <T>JSON.parse(await post(url, body, headers));
+        export const postJson = async <T>(url : string, body?: Document | XMLHttpRequestBodyInit, headers?: { [key: string]: string}): Promise<T> => <T>JSON.parse(await post(url, body, headers));
     }
     
     export module file
@@ -1005,6 +1049,10 @@ export module minamo
             };
             return result;
         };
+        export const setStyleProperty = <T extends HTMLElement | SVGAElement, U>(object: T, key: string, value: U) =>
+            undefined !== value && null !== value ?
+            setProperty(object.style, key, value):
+            removeCSSStyleProperty(object.style, key);
         export const addCSSClass = <T extends Element>(element: T, className: string) =>
         {
             const isUpdate = ! element.classList.contains(className);
