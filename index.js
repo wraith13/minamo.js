@@ -557,18 +557,35 @@ var minamo;
             window.localStorage.setItem(key, value);
             return value;
         };
+        /**
+         * @deprecated User `set2()` instead.
+         */
         localStorage.set = function (key, value) {
             localStorage.setRaw(key, encodeURIComponent(JSON.stringify(value)));
             return value;
         };
+        localStorage.set2 = function (key, value) {
+            localStorage.setRaw(key, JSON.stringify(value));
+            return value;
+        };
         localStorage.remove = function (key) { return window.localStorage.removeItem(key); };
         localStorage.getRaw = function (key) { return window.localStorage.getItem(key); };
+        /**
+         * @deprecated User `getOrNull2()` instead.
+         */
         localStorage.getOrNull = function (key) {
             var rawValue = localStorage.getRaw(key);
             return core.exists(rawValue) ? JSON.parse(decodeURIComponent(rawValue)) : null;
         };
+        localStorage.getOrNull2 = function (key) {
+            var rawValue = localStorage.getRaw(key);
+            return core.exists(rawValue) ? JSON.parse(rawValue) : null;
+        };
+        /**
+         * @deprecated
+         */
         var Property = /** @class */ (function (_super) {
-            __extends(Property, _super);
+            __extends(Property, _super); // 非推奨
             function Property(params) {
                 var _this = _super.call(this, params.updater) || this;
                 _this.save = function () {
@@ -605,6 +622,9 @@ var minamo;
             return Property;
         }(core.Property));
         localStorage.Property = Property;
+        /**
+         * @deprecated
+         */
         var AutoSaveProperty = /** @class */ (function (_super) {
             __extends(AutoSaveProperty, _super);
             function AutoSaveProperty(params) {
@@ -629,16 +649,33 @@ var minamo;
             window.sessionStorage.setItem(key, value);
             return value;
         };
+        /**
+         * @deprecated User `set2()` instead.
+         */
         sessionStorage.set = function (key, value) {
             sessionStorage.setRaw(key, encodeURIComponent(JSON.stringify(value)));
             return value;
         };
+        sessionStorage.set2 = function (key, value) {
+            sessionStorage.setRaw(key, JSON.stringify(value));
+            return value;
+        };
         sessionStorage.remove = function (key) { return window.sessionStorage.removeItem(key); };
         sessionStorage.getRaw = function (key) { return window.sessionStorage.getItem(key); };
+        /**
+         * @deprecated User `getOrNull2()` instead.
+         */
         sessionStorage.getOrNull = function (key) {
             var rawValue = sessionStorage.getRaw(key);
             return core.exists(rawValue) ? JSON.parse(decodeURIComponent(rawValue)) : null;
         };
+        sessionStorage.getOrNull2 = function (key) {
+            var rawValue = sessionStorage.getRaw(key);
+            return core.exists(rawValue) ? JSON.parse(rawValue) : null;
+        };
+        /**
+         * @deprecated
+         */
         var Property = /** @class */ (function (_super) {
             __extends(Property, _super);
             function Property(params) {
@@ -677,6 +714,9 @@ var minamo;
             return Property;
         }(core.Property));
         sessionStorage.Property = Property;
+        /**
+         * @deprecated
+         */
         var AutoSaveProperty = /** @class */ (function (_super) {
             __extends(AutoSaveProperty, _super);
             function AutoSaveProperty(params) {
@@ -719,7 +759,7 @@ var minamo;
                 }
             };
             console.log("body: " + JSON.stringify(body));
-            request.send(body);
+            request.send(body); // VS Code エディター上で異なる ES バージョンでコンパイルされエラー表示されてしまう問題回避の為の any
         }); };
         http.get = function (url, headers) { return http.request("GET", url, undefined, headers); };
         http.post = function (url, body, headers) { return http.request("POST", url, body, headers); };
@@ -847,6 +887,80 @@ var minamo;
             dom.removeChildren(parent, isRemoveChild);
             dom.appendChildren(parent, newChildren, refChild);
             return parent;
+        };
+        dom.getElementsByClassName = function (parent, className) {
+            return Array.from(parent.getElementsByClassName(className));
+        };
+        dom.getDivsByClassName = function (parent, className) {
+            return dom.getElementsByClassName(parent, className);
+        };
+        dom.getSpansByClassName = function (parent, className) {
+            return dom.getElementsByClassName(parent, className);
+        };
+        dom.getButtonsByClassName = function (parent, className) {
+            return dom.getElementsByClassName(parent, className);
+        };
+        dom.getChildNodes = function (parent) {
+            return Array.from(parent.childNodes);
+        };
+        dom.setProperty = function (object, key, value) {
+            var isUpdate = value !== object[key];
+            if (isUpdate) {
+                object[key] = value;
+            }
+            var result = {
+                object: object,
+                key: key,
+                value: value,
+                isUpdate: isUpdate,
+            };
+            return result;
+        };
+        dom.removeCSSStyleProperty = function (object, key) {
+            var isUpdate = undefined !== object[key];
+            if (isUpdate) {
+                object.removeProperty(key);
+            }
+            var result = {
+                object: object,
+                key: key,
+                isUpdate: isUpdate,
+            };
+            return result;
+        };
+        dom.setStyleProperty = function (object, key, value) {
+            return undefined !== value && null !== value ?
+                dom.setProperty(object.style, key, value) :
+                dom.removeCSSStyleProperty(object.style, key);
+        };
+        dom.addCSSClass = function (element, className) {
+            var isUpdate = !element.classList.contains(className);
+            if (isUpdate) {
+                element.classList.add(className);
+            }
+            var result = {
+                element: element,
+                className: className,
+                isUpdate: isUpdate,
+            };
+            return result;
+        };
+        dom.removeCSSClass = function (element, className) {
+            var isUpdate = element.classList.contains(className);
+            if (isUpdate) {
+                element.classList.remove(className);
+            }
+            var result = {
+                element: element,
+                className: className,
+                isUpdate: isUpdate,
+            };
+            return result;
+        };
+        dom.toggleCSSClass = function (element, className, toggle) {
+            return toggle ?
+                dom.addCSSClass(element, className) :
+                dom.removeCSSClass(element, className);
         };
     })(dom = minamo.dom || (minamo.dom = {}));
 })(minamo = exports.minamo || (exports.minamo = {}));

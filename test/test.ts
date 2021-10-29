@@ -20,7 +20,7 @@ export module test
         ++counts.total;
         result.isSucceeded ? ++counts.ok: ++counts.ng;
         return result;
-    }
+    };
     const makeHeading = (tag: string, text: string) =>
     (
         {
@@ -94,7 +94,7 @@ export module test
                     )
             )
         }
-    )
+    );
     export const tryTest = (expression: string): { isSucceeded: boolean, result: any, error: any } =>
     {
         const result =
@@ -119,7 +119,7 @@ export module test
             error;
         }
         return result;
-    }
+    };
     export const evalAsync = async (expression: string) => await eval(expression);
     export const tryTestAsync = async (expression: string): Promise<{ isSucceeded: boolean, result: any, error: any }> =>
     {
@@ -145,7 +145,7 @@ export module test
             error;
         }
         return result;
-    }
+    };
     export const test = (expression: string) =>
     {
         const result = tryTest(expression);
@@ -157,7 +157,7 @@ export module test
                 { result: result.result, }:
                 { error: result.error, },
         };
-    }
+    };
     export const testAsync = async (expression: string) =>
     {
         const result = await tryTestAsync(expression);
@@ -169,7 +169,7 @@ export module test
                 { result: result.result, }:
                 { error: result.error, },
         };
-    }
+    };
     export const errorTest = (expression: string) =>
     {
         const result = tryTest(expression);
@@ -181,7 +181,7 @@ export module test
                 { result: result.result, }:
                 { error: result.error, },
         };
-    }
+    };
     export const errorTestAsync = async (expression: string) =>
     {
         const result = await tryTestAsync(expression);
@@ -193,7 +193,7 @@ export module test
                 { result: result.result, }:
                 { error: result.error, },
         };
-    }
+    };
     export const equalTest = (expression: string, predicted: any) =>
     {
         const result = tryTest(expression);
@@ -205,7 +205,7 @@ export module test
                 { predicted, result: result.result, }:
                 { predicted, error: result.error, },
         };
-    }
+    };
     export const equalTestAsync = async (expression: string, predicted: any) =>
     {
         const result = await tryTestAsync(expression);
@@ -217,7 +217,7 @@ export module test
                 { predicted, result: result.result, }:
                 { predicted, error: result.error, },
         };
-    }
+    };
     export const start = async (): Promise<void> =>
     {
         minamo.dom.appendChildren
@@ -468,10 +468,10 @@ export module test
                 ],
             },
             document.getElementsByTagName("h2")[1]
-        )
+        );
         if (counts.ng)
         {
-            document.title = `(${counts.ng}) ${document.title}`
+            document.title = `(${counts.ng}) ${document.title}`;
         }
         setTimeout
         (

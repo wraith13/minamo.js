@@ -783,7 +783,7 @@ export module minamo
 
     export module http
     {
-        export const request = (method: string, url: string, body?: Document | XMLHttpRequestBodyInit, headers?: { [key: string]: string}): Promise<string> => new Promise<string>
+        export const request = (method: string, url: string, body?: Document | BodyInit | null, headers?: { [key: string]: string}): Promise<string> => new Promise<string>
         (
             (resolve, reject) =>
             {
@@ -815,14 +815,14 @@ export module minamo
                     }
                 };
                 console.log(`body: ${JSON.stringify(body)}`);
-                request.send(body);
+                request.send(body as any); // VS Code エディター上で異なる ES バージョンでコンパイルされエラー表示されてしまう問題回避の為の any
             }
         );
 
         export const get = (url : string, headers?: { [key: string]: string}): Promise<string> => request("GET", url, undefined, headers);
-        export const post = (url : string, body?: Document | XMLHttpRequestBodyInit, headers?: { [key: string]: string}): Promise<string> => request("POST", url, body, headers);
+        export const post = (url : string, body?: Document | BodyInit | null, headers?: { [key: string]: string}): Promise<string> => request("POST", url, body, headers);
         export const getJson = async <T>(url : string, headers?: { [key: string]: string}): Promise<T> => <T>JSON.parse(await get(url, headers));
-        export const postJson = async <T>(url : string, body?: Document | XMLHttpRequestBodyInit, headers?: { [key: string]: string}): Promise<T> => <T>JSON.parse(await post(url, body, headers));
+        export const postJson = async <T>(url : string, body?: Document | BodyInit | null, headers?: { [key: string]: string}): Promise<T> => <T>JSON.parse(await post(url, body, headers));
     }
     
     export module file
