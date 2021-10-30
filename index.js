@@ -791,6 +791,32 @@ var minamo;
     })(file = minamo.file || (minamo.file = {}));
     var dom;
     (function (dom) {
+        function get(parent, queryOrElement) {
+            if (undefined === queryOrElement) {
+                return get(document, parent);
+            }
+            if ("string" === typeof parent) {
+                return get(get(document, parent), queryOrElement);
+            }
+            if ("string" === typeof queryOrElement) {
+                return parent.querySelector(queryOrElement);
+            }
+            return queryOrElement;
+        }
+        dom.get = get;
+        function getAll(parent, queryOrElement) {
+            if (undefined === queryOrElement) {
+                return getAll(document, parent);
+            }
+            if ("string" === typeof parent) {
+                return getAll(get(document, parent), queryOrElement);
+            }
+            if ("string" === typeof queryOrElement) {
+                return Array.from(parent.querySelectorAll(queryOrElement));
+            }
+            return queryOrElement;
+        }
+        dom.getAll = getAll;
         function make(arg, level) {
             core.existsOrThrow(arg);
             if (arg instanceof Node) {
@@ -903,13 +929,14 @@ var minamo;
         dom.getChildNodes = function (parent) {
             return Array.from(parent.childNodes);
         };
-        dom.setProperty = function (object, key, value) {
-            var isUpdate = value !== object[key];
+        dom.setProperty = function (objectOrQuery, key, value) {
+            var element = get(objectOrQuery);
+            var isUpdate = value !== element[key];
             if (isUpdate) {
-                object[key] = value;
+                element[key] = value;
             }
             var result = {
-                object: object,
+                object: element,
                 key: key,
                 value: value,
                 isUpdate: isUpdate,
@@ -930,8 +957,8 @@ var minamo;
         };
         dom.setStyleProperty = function (object, key, value) {
             return undefined !== value && null !== value ?
-                dom.setProperty(object.style, key, value) :
-                dom.removeCSSStyleProperty(object.style, key);
+                dom.setProperty(get(object).style, key, value) :
+                dom.removeCSSStyleProperty(get(object).style, key);
         };
         dom.addCSSClass = function (element, className) {
             var isUpdate = !element.classList.contains(className);

@@ -841,6 +841,43 @@ export module minamo
     
     export module dom
     {
+        export function get<T extends Element>(query: string): T;
+        export function get<T extends Element>(queryOrElement: T | string): T;
+        export function get<T extends Element>(parent: Document | Element | string, queryOrElement: T | string): T;
+        export function get<T extends Element>(parent: any, queryOrElement?: T | string): T
+        {
+            if (undefined === queryOrElement)
+            {
+                return get(document, parent as any);
+            }
+            if ("string" === typeof parent)
+            {
+                return get(get(document, parent), queryOrElement);
+            }
+            if ("string" === typeof queryOrElement)
+            {
+                return <T>parent.querySelector(queryOrElement);
+            }
+            return queryOrElement;
+        }
+        export function getAll<T extends Element>(queryOrElement: T[] | string): T[];
+        export function getAll<T extends Element>(parent: Document | Element | string, queryOrElement: T[] | string): T[];
+        export function getAll<T extends Element>(parent: any, queryOrElement?: T[] | string): T[]
+        {
+            if (undefined === queryOrElement)
+            {
+                return getAll(document, parent as any);
+            }
+            if ("string" === typeof parent)
+            {
+                return getAll(get(document, parent), queryOrElement);
+            }
+            if ("string" === typeof queryOrElement)
+            {
+                return <T[]>Array.from(parent.querySelectorAll(queryOrElement));
+            }
+            return queryOrElement;
+        }
         type AlphaSource =
             {
                 outerHTML: string,
@@ -1018,28 +1055,29 @@ export module minamo
             getElementsByClassName<HTMLButtonElement>(parent, className);
         export const getChildNodes = <T extends ChildNode>(parent: Node) =>
             Array.from(parent.childNodes) as T[];
-        export const setProperty = <T, U>(object: T, key: string, value: U) =>
+        export const setProperty = <T extends Element | CSSStyleDeclaration, U>(objectOrQuery: T | string, key: string, value: U) =>
         {
-            const isUpdate = value !== object[key];
+            const element = get(objectOrQuery as string);
+            const isUpdate = value !== element[key];
             if (isUpdate)
             {
-                object[key] = value;
+                element[key] = value;
             }
             const result =
             {
-                object,
+                object: element,
                 key,
                 value,
                 isUpdate,
             };
             return result;
         };
-        export const removeCSSStyleProperty = <T extends CSSStyleDeclaration>(object: T, key: string) =>
+        export const removeCSSStyleProperty = <T extends CSSStyleDeclaration>(object: T, key: keyof CSSStyleDeclaration) =>
         {
             const isUpdate = undefined !== object[key];
             if (isUpdate)
             {
-                object.removeProperty(key);
+                object.removeProperty(key as string);
             }
             const result =
             {
@@ -1049,10 +1087,10 @@ export module minamo
             };
             return result;
         };
-        export const setStyleProperty = <T extends HTMLElement | SVGAElement, U>(object: T, key: string, value: U) =>
+        export const setStyleProperty = <T extends HTMLElement | SVGAElement, U>(object: T | string, key: keyof CSSStyleDeclaration, value: U) =>
             undefined !== value && null !== value ?
-            setProperty(object.style, key, value):
-            removeCSSStyleProperty(object.style, key);
+            setProperty(get(object).style, key as string, value):
+            removeCSSStyleProperty(get(object).style, key);
         export const addCSSClass = <T extends Element>(element: T, className: string) =>
         {
             const isUpdate = ! element.classList.contains(className);
