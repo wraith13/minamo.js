@@ -942,6 +942,21 @@ export module minamo
             }
             return set(document.createElement(arg.tag), arg);
         }
+        export const tag = (tag: string) => (className: string | minamo.dom.AlphaObjectSource) => (children: minamo.dom.Source) =>
+            "string" === typeof className ?
+            {
+                tag,
+                children,
+                className,
+            }:
+            Object.assign
+            (
+                {
+                    tag,
+                    children,
+                },
+                className,
+            );
         export const set = <T extends Element>(element: T, arg: any): T =>
         {
             core.objectForEach

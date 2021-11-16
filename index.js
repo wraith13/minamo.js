@@ -852,6 +852,18 @@ var minamo;
             return dom.set(document.createElement(arg.tag), arg);
         }
         dom.make = make;
+        dom.tag = function (tag) { return function (className) { return function (children) {
+            return "string" === typeof className ?
+                {
+                    tag: tag,
+                    children: children,
+                    className: className,
+                } :
+                Object.assign({
+                    tag: tag,
+                    children: children,
+                }, className);
+        }; }; };
         dom.set = function (element, arg) {
             core.objectForEach(arg, function (key, value) {
                 switch (key) {
