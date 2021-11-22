@@ -968,9 +968,7 @@ var minamo;
             return result;
         };
         dom.setStyleProperty = function (object, key, value) {
-            return undefined !== value && null !== value ?
-                dom.setProperty(get(object).style, key, value) :
-                dom.removeCSSStyleProperty(get(object).style, key);
+            return dom.setProperty(get(object).style, key, value !== null && value !== void 0 ? value : "");
         };
         dom.addCSSClass = function (element, className) {
             var isUpdate = !element.classList.contains(className);

@@ -1087,12 +1087,12 @@ export module minamo
             };
             return result;
         };
-        export const removeCSSStyleProperty = <T extends CSSStyleDeclaration>(object: T, key: keyof CSSStyleDeclaration) =>
+        export const removeCSSStyleProperty = <T extends CSSStyleDeclaration>(object: T, key: string) =>
         {
             const isUpdate = undefined !== object[key];
             if (isUpdate)
             {
-                object.removeProperty(key as string);
+                object.removeProperty(key);
             }
             const result =
             {
@@ -1103,9 +1103,7 @@ export module minamo
             return result;
         };
         export const setStyleProperty = <T extends HTMLElement | SVGAElement, U>(object: T | string, key: keyof CSSStyleDeclaration, value: U) =>
-            undefined !== value && null !== value ?
-            setProperty(get(object).style, key as string, value):
-            removeCSSStyleProperty(get(object).style, key);
+            setProperty(get(object).style, key as string, value ?? "");
         export const addCSSClass = <T extends Element>(element: T, className: string) =>
         {
             const isUpdate = ! element.classList.contains(className);
