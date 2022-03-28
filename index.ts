@@ -5,27 +5,30 @@ export module minamo
     {
         export const timeout = async (wait: number): Promise<void> =>
             new Promise<void>(resolve => setTimeout(resolve, wait));
-        export const tryOrThrough = function(title: string, f: () => void): void
+        export const tryOrThrough = function<ResultType, ArgumentType extends unknown[]>(title: string, f: (...args: ArgumentType) => ResultType, ...args: ArgumentType): ResultType | undefined
         {
             try
             {
-                f();
+                result = f(...args);
             }
             catch(err)
             {
                 console.error(`🚫 ${title}: ${err}`);
             }
+            return result;
         };
-        export const tryOrThroughAsync = async function(title: string, f: () => Promise<void>): Promise<void>
+        export const tryOrThroughAsync = async function<ResultType, ArgumentType extends unknown[]>(title: string, f: (...args: ArgumentType) => Promise<ResultType>, ...args: ArgumentType): Promise<ResultType | undefined>
         {
+            let result;
             try
             {
-                await f();
+                result = await f(...args);
             }
             catch(err)
             {
                 console.error(`🚫 ${title}: ${err}`);
             }
+            return result;
         };
         export const simpleDeepCopy = <T>(source: T): T => JSON.parse(JSON.stringify(source)) as T;
         export const recursiveAssign = (target: object, source: object): void => objectForEach
