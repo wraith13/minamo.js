@@ -181,7 +181,9 @@ export module minamo
             onUpdateOnce = new Listener<Property<ValueT>>();
             exists = (): boolean => exists(this.value);
             get = (): ValueT | null => this.value;
-            setAsync = async (value: ValueT | null, options?: { }): Promise<ValueT | null> =>
+            async setAsync(value: null, options?: { }): Promise<null>;
+            async setAsync(value: ValueT, options?: { }): Promise<ValueT>;
+            async setAsync(value: ValueT | null, options?: { }): Promise<ValueT | null>
             {
                 if (this.value !== value)
                 {
