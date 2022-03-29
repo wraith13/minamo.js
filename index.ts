@@ -7,6 +7,7 @@ export module minamo
             new Promise<void>(resolve => setTimeout(resolve, wait));
         export const tryOrThrough = function<ResultType, ArgumentType extends unknown[]>(title: string, f: (...args: ArgumentType) => ResultType, ...args: ArgumentType): ResultType | undefined
         {
+            let result;
             try
             {
                 result = f(...args);
@@ -31,7 +32,7 @@ export module minamo
             return result;
         };
         export const simpleDeepCopy = <T>(source: T): T => JSON.parse(JSON.stringify(source)) as T;
-        export const recursiveAssign = (target: object, source: object): void => objectForEach
+        export const recursiveAssign = (target: {[key:string]:any}, source: object): void => objectForEach
         (
             source,
             (key, value) =>
@@ -76,7 +77,7 @@ export module minamo
     
             return typeof obj;
         };
-        export const exists = (i: any): boolean => undefined !== i && null !== i;
+        export const exists = <T>(i: T | null | undefined): i is T => undefined !== i && null !== i;
         export const existsOrThrow = <ValueT>(i: ValueT): ValueT =>
         {
             if (!exists(i))
@@ -91,7 +92,7 @@ export module minamo
             {
             }
 
-            rawParams: {[key:string]:string} = null;
+            rawParams: {[key:string]:string} | null = null;
 
             set = (url: string) =>
             {
@@ -102,19 +103,19 @@ export module minamo
 
             getWithoutParams = (): string => separate(this.url, "?").head;
 
-            getRawParamsString = (): string => separate(this.url, "?").tail;
+            getRawParamsString = (): string => separate(this.url, "?").tail ?? "";
             getRawParams = (): {[key:string]:string} =>
             {
                 if (!this.rawParams)
                 {
-                    this.rawParams = { };
+                    const params: {[key:string]:string} = this.rawParams = { };
                     this.getRawParamsString().split("&")
                         .forEach
                         (
                             i =>
                             {
                                 const { head, tail } = core.separate(i, "=");
-                                this.rawParams[head] = tail;
+                                params[head] = tail ?? "";
                             }
                         );
                 }
@@ -124,7 +125,7 @@ export module minamo
 
             private updateParams = () => this.setRawParamsString
             (
-                objectToArray(this.rawParams, (k, v) => bond(k, "=", v))
+                objectToArray(this.rawParams ?? { }, (k, v) => bond(k, "=", v))
                     .join("&")
             )
 
@@ -175,12 +176,12 @@ export module minamo
         export class Property<ValueT>
         {
             constructor(private updater?: () => Promise<ValueT>) { }
-            private value: ValueT = null;
+            private value: ValueT | null = null;
             onUpdate = new Listener<Property<ValueT>>();
             onUpdateOnce = new Listener<Property<ValueT>>();
             exists = (): boolean => exists(this.value);
-            get = (): ValueT => this.value;
-            setAsync = async (value: ValueT, options?: { }): Promise<ValueT> =>
+            get = (): ValueT | null => this.value;
+            setAsync = async (value: ValueT | null, options?: { }): Promise<ValueT | null> =>
             {
                 if (this.value !== value)
                 {
@@ -191,8 +192,8 @@ export module minamo
                 }
                 return value;
             }
-            updateAsync = async (): Promise<ValueT> => await this.setAsync(await this.updater());
-            getOrUpdateAsync = async (): Promise<ValueT> => this.exists() ? this.get(): await this.updateAsync();
+            updateAsync = async (): Promise<ValueT | null> => this.updater ? await this.setAsync(await this.updater()): null;
+            getOrUpdateAsync = async (): Promise<ValueT | null> => this.exists() ? this.get(): await this.updateAsync();
         }
         export const getOrCall = <ValueT>(i: ValueT | (() => ValueT)): ValueT =>
             "function" === typeof i ?
@@ -277,7 +278,7 @@ export module minamo
             return result;
         };
 
-        export const separate = (text: string, separator: string): { head: string, tail: string } =>
+        export const separate = (text: string, separator: string): { head: string, tail: string | null } =>
         {
             const index = text.indexOf(separator);
             return 0 <= index ?
@@ -304,7 +305,7 @@ export module minamo
             }
             while(true)
             {
-                if (limit <= index)
+                if ("number" === typeof limit && limit <= index)
                 {
                     throw new RangeError(`minamo.core.loopMap() overs the limit(${limit})`);
                 }
@@ -357,7 +358,7 @@ export module minamo
             const padding = 0 < paddingLength ? "00000000000000000000".substr(-paddingLength): "";
             return `${sign}${padding}${core}`;
         };
-        export const NYI = <T>(_: T = null): T => { throw new Error("Not Yet Implement!"); };
+        export const NYI = <T>(_: T | null = null): T => { throw new Error("Not Yet Implement!"); };
         export module comparer
         {
             export type TypeOfResultType = "unknown" | "object" | "boolean" | "number" | "bigint" | "string" | "symbol" | "function" | string;
