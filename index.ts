@@ -601,17 +601,17 @@ export module minamo
             return value;
         };
         export const remove = (key: string) => window.localStorage.removeItem(key);
-        export const getRaw = (key: string): string => window.localStorage.getItem(key);
+        export const getRaw = (key: string): string | null => window.localStorage.getItem(key);
 
         /**
          * @deprecated User `getOrNull2()` instead.
          */
-         export const getOrNull = <ValueT>(key: string): ValueT => // 非推奨
+         export const getOrNull = <ValueT>(key: string): ValueT | null => // 非推奨
         {
             const rawValue = getRaw(key);
             return  core.exists(rawValue) ? <ValueT>JSON.parse(decodeURIComponent(rawValue)): null;
         };
-        export const getOrNull2 = <ValueT>(key: string): ValueT =>
+        export const getOrNull2 = <ValueT>(key: string): ValueT | null =>
         {
             const rawValue = getRaw(key);
             return  core.exists(rawValue) ? <ValueT>JSON.parse(rawValue): null;
@@ -640,12 +640,12 @@ export module minamo
                 cookie.set(core.getOrCall(this.key), this.get());
                 return this;
             }
-            loadAsync = async (): Promise<ValueT> => await this.setAsync
+            loadAsync = async (): Promise<ValueT | null> => await this.setAsync
             (
                 cookie.getOrNull(core.getOrCall(this.key)),
                 { onLoadAsync: true }
             )
-            loadOrUpdateAsync = async (): Promise<ValueT> =>
+            loadOrUpdateAsync = async (): Promise<ValueT | null> =>
             {
                 let result = await this.loadAsync();
                 if (!core.exists(result))
