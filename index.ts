@@ -471,8 +471,8 @@ export module minamo
     export module cookie
     {
         export let defaultMaxAge = 30 * 24 * 60 * 60;
-        let cache: {[key:string]:string} = null;
-        export const setRaw = (key: string, value: string, maxAge?: number): string =>
+        let cache: {[key:string]:(string|null)} | null = null;
+        export const setRaw = (key: string, value: string | null, maxAge?: number | null): string | null =>
         {
             document.cookie = core.exists(maxAge)  ?
                 `${key}=${value}; max-age=${maxAge}`:
@@ -480,7 +480,7 @@ export module minamo
             cacheOrUpdate()[key] = value;
             return value;
         };
-        export const set = <ValueT>(key: string, value: ValueT, maxAge: number = defaultMaxAge): ValueT =>
+        export const set = <ValueT>(key: string, value: ValueT, maxAge: number | null = defaultMaxAge): ValueT =>
         {
             setRaw(key, encodeURIComponent(JSON.stringify(value)), maxAge);
             return value;
@@ -491,9 +491,9 @@ export module minamo
         export const setAsMonthly = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, 30 * 24 * 60 * 60);
         export const setAsAnnually = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, 365 * 24 * 60 * 60);
         export const remove = (key: string) => setRaw(key, null, 0);
-        export const update = (): {[key:string]:string} =>
+        export const update = (): {[key:string]:(string|null)} =>
         {
-            cache = { };
+            const result: {[key:string]:(string|null)} = cache = { };
             document.cookie
                 .split(";")
                 .map(i => i.trim())
@@ -502,15 +502,18 @@ export module minamo
                     i =>
                     {
                         const { head, tail } = core.separate(i, "=");
-                        cache[head] = tail;
+                        result[head] = tail ?? "";
                     }
                 );
-            return cache;
+            return result;
         };
-        export const cacheOrUpdate = (): {[key:string]:string} => cache || update();
-        export const getRaw = (key: string): string => cacheOrUpdate()[key];
-        export const getOrNull = <ValueT>(key: string): ValueT =>
-            core.exists(getRaw(key)) ? <ValueT>JSON.parse(decodeURIComponent(cache[key])): null;
+        export const cacheOrUpdate = (): {[key:string]:(string|null)} => cache ?? update();
+        export const getRaw = (key: string): string | null => cacheOrUpdate()[key];
+        export const getOrNull = <ValueT>(key: string): ValueT | null =>
+        {
+            const rawValue = getRaw(key);
+            return core.exists(rawValue) ? <ValueT>JSON.parse(decodeURIComponent(rawValue)): null;
+        };
 
         export class Property<ValueT> extends core.Property<ValueT>
         {
@@ -535,12 +538,12 @@ export module minamo
                 cookie.set(core.getOrCall(this.key), this.get(), this.maxAge);
                 return this;
             }
-            loadAsync = async (): Promise<ValueT> => await this.setAsync
+            loadAsync = async (): Promise<ValueT | null> => await this.setAsync
             (
                 cookie.getOrNull(core.getOrCall(this.key)),
                 { onLoadAsync: true }
             )
-            loadOrUpdateAsync = async (): Promise<ValueT> =>
+            loadOrUpdateAsync = async (): Promise<ValueT | null> =>
             {
                 let result = await this.loadAsync();
                 if (!core.exists(result))
