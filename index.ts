@@ -943,7 +943,7 @@ export module minamo
                     tag = "ol";
                     break;
                 }
-                return arg2 => set(document.createElement(tag), arg2);
+                return (arg2: any) => set(document.createElement(tag), arg2);
             }
             if (arg.outerHTML)
             {
@@ -987,11 +987,11 @@ export module minamo
                         {
                             if ("object" === core.practicalTypeof(value))
                             {
-                                core.recursiveAssign(element[key], value);
+                                core.recursiveAssign((element as any)[key], value);
                             }
                             else
                             {
-                                element[key] = value;
+                                (element as any)[key] = value;
                             }
                         }
                         break;
@@ -1023,8 +1023,8 @@ export module minamo
             }
             return element;
         };
-        export const remove = (node: Node): Node => node.parentNode.removeChild(node);
-        export const removeChildren = (parent: Element, isRemoveChild?: (child: Node) => boolean): Element =>
+        export const remove = <NodeType extends Node>(node: NodeType): NodeType => node.parentNode?.removeChild(node) ?? node;
+        export const removeChildren = <ElementType extends Element>(parent: ElementType, isRemoveChild?: (child: Node) => boolean): ElementType =>
         {
             if (isRemoveChild)
             {
@@ -1045,7 +1045,7 @@ export module minamo
             }
             return parent;
         };
-        export const appendChildren = (parent: Element, newChildren: Source, refChild?: Node): Element =>
+        export const appendChildren = <ElementType extends Element>(parent: ElementType, newChildren: Source, refChild?: Node): ElementType =>
         {
             core.singleOrArray
             (
@@ -1058,12 +1058,12 @@ export module minamo
             return parent;
         };
         export const replaceChildren =
-        (
-            parent: Element,
+        <ElementType extends Element>(
+            parent: ElementType,
             newChildren: any,
             isRemoveChild?: (child: Node) => boolean,
             refChild?: Node
-        ): Element =>
+        ): ElementType =>
         {
             removeChildren(parent, isRemoveChild);
             appendChildren(parent, newChildren, refChild);
@@ -1082,10 +1082,10 @@ export module minamo
         export const setProperty = <T extends Element | CSSStyleDeclaration, U>(objectOrQuery: T | string, key: string, value: U) =>
         {
             const element = get(objectOrQuery as string);
-            const isUpdate = value !== element[key];
+            const isUpdate = value !== (element as any)[key];
             if (isUpdate)
             {
-                element[key] = value;
+                (element as any)[key] = value;
             }
             const result =
             {
@@ -1098,7 +1098,7 @@ export module minamo
         };
         export const removeCSSStyleProperty = <T extends CSSStyleDeclaration>(object: T, key: string) =>
         {
-            const isUpdate = undefined !== object[key];
+            const isUpdate = undefined !== (object as any)[key];
             if (isUpdate)
             {
                 object.removeProperty(key);

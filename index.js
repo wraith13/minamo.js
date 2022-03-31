@@ -61,29 +61,39 @@ var minamo;
             return [2 /*return*/, new Promise(function (resolve) { return setTimeout(resolve, wait); })];
         }); }); };
         core_1.tryOrThrough = function (title, f) {
+            var args = [];
+            for (var _i = 2; _i < arguments.length; _i++) {
+                args[_i - 2] = arguments[_i];
+            }
+            var result;
             try {
-                f();
+                result = f.apply(void 0, args);
             }
             catch (err) {
-                console.error("\uD83D\uDEAB " + title + ": " + err);
+                console.error("\uD83D\uDEAB ".concat(title, ": ").concat(err));
             }
+            return result;
         };
         core_1.tryOrThroughAsync = function (title, f) {
+            var args = [];
+            for (var _i = 2; _i < arguments.length; _i++) {
+                args[_i - 2] = arguments[_i];
+            }
             return __awaiter(this, void 0, void 0, function () {
-                var err_1;
+                var result, err_1;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             _a.trys.push([0, 2, , 3]);
-                            return [4 /*yield*/, f()];
+                            return [4 /*yield*/, f.apply(void 0, args)];
                         case 1:
-                            _a.sent();
+                            result = _a.sent();
                             return [3 /*break*/, 3];
                         case 2:
                             err_1 = _a.sent();
-                            console.error("\uD83D\uDEAB " + title + ": " + err_1);
+                            console.error("\uD83D\uDEAB ".concat(title, ": ").concat(err_1));
                             return [3 /*break*/, 3];
-                        case 3: return [2 /*return*/];
+                        case 3: return [2 /*return*/, result];
                     }
                 });
             });
@@ -136,21 +146,24 @@ var minamo;
                     return _this;
                 };
                 this.getWithoutParams = function () { return core_1.separate(_this.url, "?").head; };
-                this.getRawParamsString = function () { return core_1.separate(_this.url, "?").tail; };
+                this.getRawParamsString = function () { var _a; return (_a = core_1.separate(_this.url, "?").tail) !== null && _a !== void 0 ? _a : ""; };
                 this.getRawParams = function () {
                     if (!_this.rawParams) {
-                        _this.rawParams = {};
+                        var params_1 = _this.rawParams = {};
                         _this.getRawParamsString().split("&")
                             .forEach(function (i) {
                             var _a = core.separate(i, "="), head = _a.head, tail = _a.tail;
-                            _this.rawParams[head] = tail;
+                            params_1[head] = tail !== null && tail !== void 0 ? tail : "";
                         });
                     }
                     return _this.rawParams;
                 };
                 this.getParam = function (key) { return decodeURIComponent(_this.getRawParams()[key]); };
-                this.updateParams = function () { return _this.setRawParamsString(core_1.objectToArray(_this.rawParams, function (k, v) { return core_1.bond(k, "=", v); })
-                    .join("&")); };
+                this.updateParams = function () {
+                    var _a;
+                    return _this.setRawParamsString(core_1.objectToArray((_a = _this.rawParams) !== null && _a !== void 0 ? _a : {}, function (k, v) { return core_1.bond(k, "=", v); })
+                        .join("&"));
+                };
                 this.setRawParamsString = function (rawParamsString) {
                     _this.url = core_1.bond(_this.getWithoutParams(), "?", rawParamsString);
                     return _this;
@@ -217,31 +230,20 @@ var minamo;
                 this.onUpdateOnce = new Listener();
                 this.exists = function () { return core_1.exists(_this.value); };
                 this.get = function () { return _this.value; };
-                this.setAsync = function (value, options) { return __awaiter(_this, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                if (!(this.value !== value)) return [3 /*break*/, 3];
-                                this.value = value;
-                                return [4 /*yield*/, this.onUpdate.fireAsync(this, options)];
-                            case 1:
-                                _a.sent();
-                                return [4 /*yield*/, this.onUpdateOnce.fireAsync(this, options)];
-                            case 2:
-                                _a.sent();
-                                this.onUpdateOnce.clear();
-                                _a.label = 3;
-                            case 3: return [2 /*return*/, value];
-                        }
-                    });
-                }); };
-                this.updateAsync = function () { return __awaiter(_this, void 0, void 0, function () { var _a; return __generator(this, function (_b) {
-                    switch (_b.label) {
+                this.updateAsync = function () { return __awaiter(_this, void 0, void 0, function () { var _a, _b; return __generator(this, function (_c) {
+                    switch (_c.label) {
                         case 0:
-                            _a = this.setAsync;
+                            if (!this.updater) return [3 /*break*/, 3];
+                            _b = this.setAsync;
                             return [4 /*yield*/, this.updater()];
-                        case 1: return [4 /*yield*/, _a.apply(this, [_b.sent()])];
-                        case 2: return [2 /*return*/, _b.sent()];
+                        case 1: return [4 /*yield*/, _b.apply(this, [_c.sent()])];
+                        case 2:
+                            _a = _c.sent();
+                            return [3 /*break*/, 4];
+                        case 3:
+                            _a = null;
+                            _c.label = 4;
+                        case 4: return [2 /*return*/, _a];
                     }
                 }); }); };
                 this.getOrUpdateAsync = function () { return __awaiter(_this, void 0, void 0, function () { var _a; return __generator(this, function (_b) {
@@ -258,6 +260,26 @@ var minamo;
                     }
                 }); }); };
             }
+            Property.prototype.setAsync = function (value, options) {
+                return __awaiter(this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!(this.value !== value)) return [3 /*break*/, 3];
+                                this.value = value;
+                                return [4 /*yield*/, this.onUpdate.fireAsync(this, options)];
+                            case 1:
+                                _a.sent();
+                                return [4 /*yield*/, this.onUpdateOnce.fireAsync(this, options)];
+                            case 2:
+                                _a.sent();
+                                this.onUpdateOnce.clear();
+                                _a.label = 3;
+                            case 3: return [2 /*return*/, value];
+                        }
+                    });
+                });
+            };
             return Property;
         }());
         core_1.Property = Property;
@@ -328,7 +350,7 @@ var minamo;
         };
         core_1.bond = function (head, separator, tail) {
             return core_1.exists(tail) ?
-                "" + core_1.existsOrThrow(head) + core_1.existsOrThrow(separator) + tail :
+                "".concat(core_1.existsOrThrow(head)).concat(core_1.existsOrThrow(separator)).concat(tail) :
                 core_1.existsOrThrow(head);
         };
         core_1.loopMap = function (mapFunction, limit) {
@@ -338,8 +360,8 @@ var minamo;
                 limit = 100000;
             }
             while (true) {
-                if (limit <= index) {
-                    throw new RangeError("minamo.core.loopMap() overs the limit(" + limit + ")");
+                if ("number" === typeof limit && limit <= index) {
+                    throw new RangeError("minamo.core.loopMap() overs the limit(".concat(limit, ")"));
                 }
                 var current = mapFunction(index++, result);
                 if (core_1.exists(current)) {
@@ -364,19 +386,19 @@ var minamo;
         };
         core_1.zeroPadding = function (length, n) {
             if (21 < length) {
-                throw new RangeError("length(" + length + ") in minamo.core.zeroPadding() overs 21.");
+                throw new RangeError("length(".concat(length, ") in minamo.core.zeroPadding() overs 21."));
             }
             if (1e+21 <= n) {
-                throw new RangeError("n(" + n + ") in minamo.core.zeroPadding() is 1e+21 or more.");
+                throw new RangeError("n(".concat(n, ") in minamo.core.zeroPadding() is 1e+21 or more."));
             }
             if (n <= -1e+21) {
-                throw new RangeError("n(" + n + ") in minamo.core.zeroPadding() is -1e+21 or less.");
+                throw new RangeError("n(".concat(n, ") in minamo.core.zeroPadding() is -1e+21 or less."));
             }
             var sign = n < 0 ? "-" : "";
-            var core = "" + Math.abs(Math.round(n));
+            var core = "".concat(Math.abs(Math.round(n)));
             var paddingLength = length - (sign.length + core.length);
             var padding = 0 < paddingLength ? "00000000000000000000".substr(-paddingLength) : "";
-            return "" + sign + padding + core;
+            return "".concat(sign).concat(padding).concat(core);
         };
         core_1.NYI = function (_) {
             if (_ === void 0) { _ = null; }
@@ -462,8 +484,8 @@ var minamo;
         var cache = null;
         cookie.setRaw = function (key, value, maxAge) {
             document.cookie = core.exists(maxAge) ?
-                key + "=" + value + "; max-age=" + maxAge :
-                key + "=" + value;
+                "".concat(key, "=").concat(value, "; max-age=").concat(maxAge) :
+                "".concat(key, "=").concat(value);
             cookie.cacheOrUpdate()[key] = value;
             return value;
         };
@@ -479,20 +501,21 @@ var minamo;
         cookie.setAsAnnually = function (key, value) { return cookie.set(key, value, 365 * 24 * 60 * 60); };
         cookie.remove = function (key) { return cookie.setRaw(key, null, 0); };
         cookie.update = function () {
-            cache = {};
+            var result = cache = {};
             document.cookie
                 .split(";")
                 .map(function (i) { return i.trim(); })
                 .forEach(function (i) {
                 var _a = core.separate(i, "="), head = _a.head, tail = _a.tail;
-                cache[head] = tail;
+                result[head] = tail !== null && tail !== void 0 ? tail : "";
             });
-            return cache;
+            return result;
         };
-        cookie.cacheOrUpdate = function () { return cache || cookie.update(); };
+        cookie.cacheOrUpdate = function () { return cache !== null && cache !== void 0 ? cache : cookie.update(); };
         cookie.getRaw = function (key) { return cookie.cacheOrUpdate()[key]; };
         cookie.getOrNull = function (key) {
-            return core.exists(cookie.getRaw(key)) ? JSON.parse(decodeURIComponent(cache[key])) : null;
+            var rawValue = cookie.getRaw(key);
+            return core.exists(rawValue) ? JSON.parse(decodeURIComponent(rawValue)) : null;
         };
         var Property = /** @class */ (function (_super) {
             __extends(Property, _super);
@@ -694,16 +717,17 @@ var minamo;
                 }); };
                 _this.loadOrUpdateAsync = function () { return __awaiter(_this, void 0, void 0, function () {
                     var result;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
+                    var _a;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
                             case 0: return [4 /*yield*/, this.loadAsync()];
                             case 1:
-                                result = _a.sent();
+                                result = _b.sent();
                                 if (!!core.exists(result)) return [3 /*break*/, 3];
                                 return [4 /*yield*/, this.updateAsync()];
                             case 2:
-                                result = _a.sent();
-                                _a.label = 3;
+                                result = (_a = (_b.sent())) !== null && _a !== void 0 ? _a : result;
+                                _b.label = 3;
                             case 3: return [2 /*return*/, result];
                         }
                     });
@@ -742,7 +766,7 @@ var minamo;
             var request = new XMLHttpRequest();
             request.open(method, url, true);
             if (headers) {
-                console.log("headers: " + JSON.stringify(headers));
+                console.log("headers: ".concat(JSON.stringify(headers)));
                 Object.keys(headers).forEach(function (key) { return request.setRequestHeader(key, headers[key]); });
             }
             request.onreadystatechange = function () {
@@ -758,7 +782,7 @@ var minamo;
                     }
                 }
             };
-            console.log("body: " + JSON.stringify(body));
+            console.log("body: ".concat(JSON.stringify(body)));
             request.send(body); // VS Code エディター上で異なる ES バージョンでコンパイルされエラー表示されてしまう問題回避の為の any
         }); };
         http.get = function (url, headers) { return http.request("GET", url, undefined, headers); };
@@ -832,7 +856,7 @@ var minamo;
                         tag_1 = "a";
                         break;
                     case "heading":
-                        tag_1 = "h" + level;
+                        tag_1 = "h".concat(level);
                         break;
                     case "dlist":
                         tag_1 = "dl";
@@ -901,7 +925,7 @@ var minamo;
             }
             return element;
         };
-        dom.remove = function (node) { return node.parentNode.removeChild(node); };
+        dom.remove = function (node) { var _a, _b; return (_b = (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(node)) !== null && _b !== void 0 ? _b : node; };
         dom.removeChildren = function (parent, isRemoveChild) {
             if (isRemoveChild) {
                 parent.childNodes.forEach(function (i) {

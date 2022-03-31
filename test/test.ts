@@ -100,8 +100,8 @@ export module test
         const result =
         {
             isSucceeded :  false,
-            result: undefined,
-            error: undefined,
+            result: undefined as any,
+            error: undefined as any,
         };
         try
         {
@@ -126,8 +126,8 @@ export module test
         const result =
         {
             isSucceeded :  false,
-            result: undefined,
-            error: undefined,
+            result: undefined as any,
+            error: undefined as any,
         };
         try
         {
