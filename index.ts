@@ -706,17 +706,17 @@ export module minamo
             return value;
         };
         export const remove = (key: string) => window.sessionStorage.removeItem(key);
-        export const getRaw = (key: string): string => window.sessionStorage.getItem(key);
+        export const getRaw = (key: string): string | null => window.sessionStorage.getItem(key);
 
         /**
          * @deprecated User `getOrNull2()` instead.
          */
-         export const getOrNull = <ValueT>(key: string): ValueT =>
+         export const getOrNull = <ValueT>(key: string): ValueT | null =>
         {
             const rawValue = getRaw(key);
             return  core.exists(rawValue) ? <ValueT>JSON.parse(decodeURIComponent(rawValue)): null;
         };
-        export const getOrNull2 = <ValueT>(key: string): ValueT =>
+        export const getOrNull2 = <ValueT>(key: string): ValueT | null =>
         {
             const rawValue = getRaw(key);
             return  core.exists(rawValue) ? <ValueT>JSON.parse(rawValue): null;
@@ -745,17 +745,17 @@ export module minamo
                 cookie.set(core.getOrCall(this.key), this.get());
                 return this;
             }
-            loadAsync = async (): Promise<ValueT> => await this.setAsync
+            loadAsync = async (): Promise<ValueT | null> => await this.setAsync
             (
                 cookie.getOrNull(core.getOrCall(this.key)),
                 { onLoadAsync: true }
             )
-            loadOrUpdateAsync = async (): Promise<ValueT> =>
+            loadOrUpdateAsync = async (): Promise<ValueT | null> =>
             {
                 let result = await this.loadAsync();
                 if (!core.exists(result))
                 {
-                    result = await this.updateAsync();
+                    result = (await this.updateAsync()) ?? result;
                 }
                 return result;
             }
