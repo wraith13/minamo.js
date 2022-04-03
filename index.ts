@@ -78,7 +78,7 @@ export module minamo
             return typeof obj;
         };
         export const exists = <T>(i: T | null | undefined): i is T => undefined !== i && null !== i;
-        export const existsOrThrow = <ValueT>(i: ValueT): ValueT =>
+        export const existsOrThrow = <ValueT>(i: ValueT | null | undefined): ValueT =>
         {
             if (!exists(i))
             {
