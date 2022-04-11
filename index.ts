@@ -365,13 +365,14 @@ export module minamo
         {
             export type TypeOfResultType = "unknown" | "object" | "boolean" | "number" | "bigint" | "string" | "symbol" | "function" | string;
             export type CompareResultType = -1 | 0 | 1;
+            export type ComparerType<objectT> = (a: objectT, b: objectT) => CompareResultType;
             export const basic = <valueT>(a: valueT, b: valueT): CompareResultType =>
                 a < b ? -1:
                 b < a ? 1:
                 0;
             export interface RawSource<objectT>
             {
-                raw: (a: objectT, b: objectT) => CompareResultType;
+                raw: ComparerType<objectT>;
             }
             export interface Source<objectT, valueT, valueT2>
             {
@@ -387,9 +388,9 @@ export module minamo
             (
                 source: ((object: objectT) => valueT) | RawSource<objectT> | Source<objectT, valueT, valueT2> |
                     ((((object: objectT) => valueT) | RawSource<objectT> | Source<objectT, valueT, valueT2>)[])
-            ): ((a: objectT, b: objectT) => CompareResultType) =>
+            ): ComparerType<objectT> =>
             {
-                const invoker = <objectT>(i: ((object: objectT) => valueT) | RawSource<objectT> | Source<objectT, valueT, valueT2>): ((a: objectT, b: objectT) => CompareResultType) | undefined =>
+                const invoker = <objectT>(i: ((object: objectT) => valueT) | RawSource<objectT> | Source<objectT, valueT, valueT2>): ComparerType<objectT> | undefined =>
                 {
                     const f = i as ((object: objectT) => valueT);
                     if ("function" === typeof f)
@@ -435,7 +436,7 @@ export module minamo
                 };
                 if (Array.isArray(source))
                 {
-                    const comparerList = <((a: objectT, b: objectT) => CompareResultType)[]>source.map(invoker).filter(i => undefined !== i);
+                    const comparerList = <ComparerType<objectT>[]>source.map(invoker).filter(i => undefined !== i);
                     return (a: objectT, b: objectT) =>
                     {
                         let result: CompareResultType  = 0;
