@@ -86,6 +86,7 @@ export module minamo
             }
             return i;
         };
+        export const existFilter = <T>(list: (T | null | undefined)[]): T[] => <T[]>(list.filter(i => exists(i)));
         export class Url
         {
             constructor(private url: string)

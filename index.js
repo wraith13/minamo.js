@@ -135,6 +135,7 @@ var minamo;
             }
             return i;
         };
+        core_1.existFilter = function (list) { return (list.filter(function (i) { return core_1.exists(i); })); };
         var Url = /** @class */ (function () {
             function Url(url) {
                 var _this = this;
