@@ -570,7 +570,7 @@ export module minamo
                 super(params);
                 this.onUpdate.push
                 (
-                    async (_value: Property<ValueT>, options?: { [key:string]: any }): Promise<void> =>
+                    async (_value: core.Property<ValueT>, options?: { [key:string]: any }): Promise<void> =>
                     {
                         if (!options || !options.onLoadAsync)
                         {
@@ -675,7 +675,7 @@ export module minamo
                 super(params);
                 this.onUpdate.push
                 (
-                    async (_value: Property<ValueT>, options?: { [key:string]: any }): Promise<void> =>
+                    async (_value: core.Property<ValueT>, options?: { [key:string]: any }): Promise<void> =>
                     {
                         if (!options || !options.onLoadAsync)
                         {
@@ -780,7 +780,7 @@ export module minamo
                 super(params);
                 this.onUpdate.push
                 (
-                    async (_value: Property<ValueT>, options?: { [key:string]: any }): Promise<void> =>
+                    async (_value: core.Property<ValueT>, options?: { [key:string]: any }): Promise<void> =>
                     {
                         if (!options || !options.onLoadAsync)
                         {
