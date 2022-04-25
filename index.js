@@ -116,6 +116,7 @@ var minamo;
                 target[key] = value;
             }
         }); };
+        core_1.objectKeys = function (target) { return Object.keys(target); };
         core_1.practicalTypeof = function (obj) {
             if (undefined === obj) {
                 return "undefined";

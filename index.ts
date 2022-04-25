@@ -60,6 +60,7 @@ export module minamo
                 }
             }
         );
+        export const objectKeys = <T extends object>(target: T) => Object.keys(target) as (keyof T)[];
         export const practicalTypeof = function(obj: any): string
         {
             if (undefined === obj)
