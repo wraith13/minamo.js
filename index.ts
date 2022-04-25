@@ -895,8 +895,9 @@ export module minamo
             } |
             string |
             Node;
-        export type AttributesSource = { [key: string]: ((event: Event) => unknown) | string };
-        export type AlphaObjectSource = { [key: string]: ((event: Event) => unknown) | Source | AttributesSource | undefined } &
+        type EventHandler<EventType extends Event> = (event: EventType) => unknown;
+        export type AttributesSource = { [key: string]: EventHandler<any> | string };
+        export type AlphaObjectSource = { [key: string]: EventHandler<any> | Source | AttributesSource | undefined } &
         {
             tag?: string,
             className?: string,
