@@ -1083,7 +1083,7 @@ export module minamo
             getElementsByClassName<HTMLButtonElement>(parent, className);
         export const getChildNodes = <T extends ChildNode>(parent: Node) =>
             Array.from(parent.childNodes) as T[];
-        export const setProperty = <T extends Element | CSSStyleDeclaration, U>(objectOrQuery: T | string, key: string, value: U) =>
+        export const setProperty = <T extends Node | CSSStyleDeclaration, U>(objectOrQuery: T | string, key: string, value: U) =>
         {
             const element = get(objectOrQuery as string);
             const isUpdate = value !== (element as any)[key];
