@@ -971,7 +971,12 @@ var minamo;
             var element = get(objectOrQuery);
             var isUpdate = value !== element[key];
             if (isUpdate) {
-                element[key] = value;
+                if (undefined === value && element instanceof CSSStyleDeclaration) {
+                    element.removeProperty(key);
+                }
+                else {
+                    element[key] = value;
+                }
             }
             var result = {
                 object: element,
@@ -980,6 +985,9 @@ var minamo;
                 isUpdate: isUpdate,
             };
             return result;
+        };
+        dom.setProperties = function (objectOrQuery, data) {
+            return core.objectKeys(data).map(function (key) { return dom.setProperty(objectOrQuery, key, data[key]); });
         };
         dom.removeCSSStyleProperty = function (object, key) {
             var isUpdate = undefined !== object[key];

@@ -1089,7 +1089,14 @@ export module minamo
             const isUpdate = value !== (element as any)[key];
             if (isUpdate)
             {
-                (element as any)[key] = value;
+                if (undefined === value && element instanceof CSSStyleDeclaration)
+                {
+                    element.removeProperty(key);
+                }
+                else
+                {
+                    (element as any)[key] = value;
+                }
             }
             const result =
             {
@@ -1100,6 +1107,8 @@ export module minamo
             };
             return result;
         };
+        export const setProperties = <T extends Node | CSSStyleDeclaration>(objectOrQuery: T | string, data: { [key: string]: unknown }) =>
+            core.objectKeys(data).map(key => setProperty(objectOrQuery, key, data[key]));
         export const removeCSSStyleProperty = <T extends CSSStyleDeclaration>(object: T, key: string) =>
         {
             const isUpdate = undefined !== (object as any)[key];
