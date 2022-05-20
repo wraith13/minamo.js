@@ -3,6 +3,8 @@ export module minamo
 {
     export module core
     {
+        export type JsonableValue = number | string | null;
+        export type Jsonable = JsonableValue | JsonableValue[] | { [key: string]: Jsonable };
         export const timeout = async (wait: number): Promise<void> =>
             new Promise<void>(resolve => setTimeout(resolve, wait));
         export const tryOrThrough = function<ResultType, ArgumentType extends unknown[]>(title: string, f: (...args: ArgumentType) => ResultType, ...args: ArgumentType): ResultType | undefined
@@ -31,7 +33,7 @@ export module minamo
             }
             return result;
         };
-        export const simpleDeepCopy = <T>(source: T): T => JSON.parse(JSON.stringify(source)) as T;
+        export const simpleDeepCopy = <T extends Jsonable>(source: T): T => JSON.parse(JSON.stringify(source)) as T;
         export const recursiveAssign = (target: {[key:string]:any}, source: object): void => objectForEach
         (
             source,
