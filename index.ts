@@ -3,8 +3,9 @@ export module minamo
 {
     export module core
     {
-        export type JsonableValue = number | string | null;
-        export type Jsonable = JsonableValue | JsonableValue[] | { [key: string]: Jsonable };
+        export type JsonableValue = null | boolean | number | string;
+        export type Jsonable = JsonableValue | Jsonable[] | { [key: string]: undefined | Jsonable };
+        export type JsonableObject = { [key: string]: undefined | Jsonable };
         export const timeout = async (wait: number): Promise<void> =>
             new Promise<void>(resolve => setTimeout(resolve, wait));
         export const tryOrThrough = function<ResultType, ArgumentType extends unknown[]>(title: string, f: (...args: ArgumentType) => ResultType, ...args: ArgumentType): ResultType | undefined
