@@ -4,8 +4,11 @@ export module minamo
     export module core
     {
         export type JsonableValue = null | boolean | number | string;
-        export type Jsonable = JsonableValue | Jsonable[] | { [key: string]: undefined | Jsonable };
-        export type JsonableObject = { [key: string]: undefined | Jsonable };
+        export interface JsonableObject
+        {
+            [key: string]: undefined | Jsonable;
+        }
+        export type Jsonable = JsonableValue | Jsonable[] | JsonableObject;
         export const jsonStringify = <T extends Jsonable>(source: T, replacer?: (this: any, key: string, value: any) => any, space?: string | number) => JSON.stringify(source, replacer, space);
         export const timeout = async (wait: number): Promise<void> =>
             new Promise<void>(resolve => setTimeout(resolve, wait));
