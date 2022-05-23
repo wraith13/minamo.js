@@ -6,6 +6,7 @@ export module minamo
         export type JsonableValue = null | boolean | number | string;
         export type Jsonable = JsonableValue | Jsonable[] | { [key: string]: undefined | Jsonable };
         export type JsonableObject = { [key: string]: undefined | Jsonable };
+        export const jsonStringify = <T extends Jsonable>(source: T, replacer?: (this: any, key: string, value: any) => any, space?: string | number) => JSON.stringify(source, replacer, space);
         export const timeout = async (wait: number): Promise<void> =>
             new Promise<void>(resolve => setTimeout(resolve, wait));
         export const tryOrThrough = function<ResultType, ArgumentType extends unknown[]>(title: string, f: (...args: ArgumentType) => ResultType, ...args: ArgumentType): ResultType | undefined
@@ -34,7 +35,7 @@ export module minamo
             }
             return result;
         };
-        export const simpleDeepCopy = <T extends Jsonable>(source: T): T => JSON.parse(JSON.stringify(source)) as T;
+        export const simpleDeepCopy = <T extends Jsonable>(source: T): T => JSON.parse(jsonStringify(source)) as T;
         export const recursiveAssign = (target: {[key:string]:any}, source: object): void => objectForEach
         (
             source,
@@ -486,16 +487,16 @@ export module minamo
             cacheOrUpdate()[key] = value;
             return value;
         };
-        export const set = <ValueT>(key: string, value: ValueT, maxAge: number | null = defaultMaxAge): ValueT =>
+        export const set = <ValueT extends core.Jsonable>(key: string, value: ValueT, maxAge: number | null = defaultMaxAge): ValueT =>
         {
-            setRaw(key, encodeURIComponent(JSON.stringify(value)), maxAge);
+            setRaw(key, encodeURIComponent(core.jsonStringify(value)), maxAge);
             return value;
         };
-        export const setAsTemporary = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, null);
-        export const setAsDaily = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, 24 * 60 * 60);
-        export const setAsWeekly = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, 7 * 24 * 60 * 60);
-        export const setAsMonthly = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, 30 * 24 * 60 * 60);
-        export const setAsAnnually = <ValueT>(key: string, value: ValueT): ValueT => set(key, value, 365 * 24 * 60 * 60);
+        export const setAsTemporary = <ValueT extends core.Jsonable>(key: string, value: ValueT): ValueT => set(key, value, null);
+        export const setAsDaily = <ValueT extends core.Jsonable>(key: string, value: ValueT): ValueT => set(key, value, 24 * 60 * 60);
+        export const setAsWeekly = <ValueT extends core.Jsonable>(key: string, value: ValueT): ValueT => set(key, value, 7 * 24 * 60 * 60);
+        export const setAsMonthly = <ValueT extends core.Jsonable>(key: string, value: ValueT): ValueT => set(key, value, 30 * 24 * 60 * 60);
+        export const setAsAnnually = <ValueT extends core.Jsonable>(key: string, value: ValueT): ValueT => set(key, value, 365 * 24 * 60 * 60);
         export const remove = (key: string) => setRaw(key, null, 0);
         export const update = (): {[key:string]:(string|null)} =>
         {
@@ -521,7 +522,7 @@ export module minamo
             return core.exists(rawValue) ? <ValueT>JSON.parse(decodeURIComponent(rawValue)): null;
         };
 
-        export class Property<ValueT> extends core.Property<ValueT>
+        export class Property<ValueT extends core.Jsonable> extends core.Property<ValueT>
         {
             private key: string | (() => string);
             private maxAge?: number;
@@ -559,7 +560,7 @@ export module minamo
                 return result;
             }
         }
-        export class AutoSaveProperty<ValueT> extends Property<ValueT>
+        export class AutoSaveProperty<ValueT extends core.Jsonable> extends Property<ValueT>
         {
             constructor
             (
@@ -596,14 +597,14 @@ export module minamo
         /**
          * @deprecated User `set2()` instead.
          */
-        export const set = <ValueT>(key: string, value: ValueT): ValueT => // 非推奨
+        export const set = <ValueT extends core.Jsonable>(key: string, value: ValueT): ValueT => // 非推奨
         {
-            setRaw(key, encodeURIComponent(JSON.stringify(value)));
+            setRaw(key, encodeURIComponent(core.jsonStringify(value)));
             return value;
         };
-        export const set2 = <ValueT>(key: string, value: ValueT): ValueT =>
+        export const set2 = <ValueT extends core.Jsonable>(key: string, value: ValueT): ValueT =>
         {
-            setRaw(key, JSON.stringify(value));
+            setRaw(key, core.jsonStringify(value));
             return value;
         };
         export const remove = (key: string) => window.localStorage.removeItem(key);
@@ -626,7 +627,7 @@ export module minamo
         /**
          * @deprecated
          */
-         export class Property<ValueT> extends core.Property<ValueT> // 非推奨
+         export class Property<ValueT extends core.Jsonable> extends core.Property<ValueT> // 非推奨
         {
             private key: string | (() => string);
             constructor
@@ -664,7 +665,7 @@ export module minamo
         /**
          * @deprecated
          */
-         export class AutoSaveProperty<ValueT> extends Property<ValueT>
+         export class AutoSaveProperty<ValueT extends core.Jsonable> extends Property<ValueT>
         {
             constructor
             (
@@ -701,14 +702,14 @@ export module minamo
         /**
          * @deprecated User `set2()` instead.
          */
-         export const set = <ValueT>(key: string, value: ValueT): ValueT =>
+         export const set = <ValueT extends core.Jsonable>(key: string, value: ValueT): ValueT =>
         {
-            setRaw(key, encodeURIComponent(JSON.stringify(value)));
+            setRaw(key, encodeURIComponent(core.jsonStringify(value)));
             return value;
         };
-        export const set2 = <ValueT>(key: string, value: ValueT): ValueT =>
+        export const set2 = <ValueT extends core.Jsonable>(key: string, value: ValueT): ValueT =>
         {
-            setRaw(key, JSON.stringify(value));
+            setRaw(key, core.jsonStringify(value));
             return value;
         };
         export const remove = (key: string) => window.sessionStorage.removeItem(key);
@@ -731,7 +732,7 @@ export module minamo
         /**
          * @deprecated
          */
-         export class Property<ValueT> extends core.Property<ValueT>
+         export class Property<ValueT extends core.Jsonable> extends core.Property<ValueT>
         {
             private key: string | (() => string);
             constructor
@@ -769,7 +770,7 @@ export module minamo
         /**
          * @deprecated
          */
-         export class AutoSaveProperty<ValueT> extends Property<ValueT>
+         export class AutoSaveProperty<ValueT extends core.Jsonable> extends Property<ValueT>
         {
             constructor
             (
@@ -806,7 +807,7 @@ export module minamo
                 request.open(method, url, true);
                 if (headers)
                 {
-                    console.log(`headers: ${JSON.stringify(headers)}`);
+                    console.log(`headers: ${core.jsonStringify(headers)}`);
                     Object.keys(headers).forEach(key => request.setRequestHeader(key, headers[key]));
                 }
                 request.onreadystatechange = function()

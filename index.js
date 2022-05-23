@@ -57,6 +57,7 @@ var minamo;
     var core;
     (function (core_1) {
         var _this = this;
+        core_1.jsonStringify = function (source, replacer, space) { return JSON.stringify(source, replacer, space); };
         core_1.timeout = function (wait) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (resolve) { return setTimeout(resolve, wait); })];
         }); }); };
@@ -98,7 +99,7 @@ var minamo;
                 });
             });
         };
-        core_1.simpleDeepCopy = function (source) { return JSON.parse(JSON.stringify(source)); };
+        core_1.simpleDeepCopy = function (source) { return JSON.parse(core_1.jsonStringify(source)); };
         core_1.recursiveAssign = function (target, source) { return core_1.objectForEach(source, function (key, value) {
             if ("object" === core_1.practicalTypeof(value)) {
                 if (undefined === target[key]) {
@@ -493,7 +494,7 @@ var minamo;
         };
         cookie.set = function (key, value, maxAge) {
             if (maxAge === void 0) { maxAge = cookie.defaultMaxAge; }
-            cookie.setRaw(key, encodeURIComponent(JSON.stringify(value)), maxAge);
+            cookie.setRaw(key, encodeURIComponent(core.jsonStringify(value)), maxAge);
             return value;
         };
         cookie.setAsTemporary = function (key, value) { return cookie.set(key, value, null); };
@@ -586,11 +587,11 @@ var minamo;
          * @deprecated User `set2()` instead.
          */
         localStorage.set = function (key, value) {
-            localStorage.setRaw(key, encodeURIComponent(JSON.stringify(value)));
+            localStorage.setRaw(key, encodeURIComponent(core.jsonStringify(value)));
             return value;
         };
         localStorage.set2 = function (key, value) {
-            localStorage.setRaw(key, JSON.stringify(value));
+            localStorage.setRaw(key, core.jsonStringify(value));
             return value;
         };
         localStorage.remove = function (key) { return window.localStorage.removeItem(key); };
@@ -678,11 +679,11 @@ var minamo;
          * @deprecated User `set2()` instead.
          */
         sessionStorage.set = function (key, value) {
-            sessionStorage.setRaw(key, encodeURIComponent(JSON.stringify(value)));
+            sessionStorage.setRaw(key, encodeURIComponent(core.jsonStringify(value)));
             return value;
         };
         sessionStorage.set2 = function (key, value) {
-            sessionStorage.setRaw(key, JSON.stringify(value));
+            sessionStorage.setRaw(key, core.jsonStringify(value));
             return value;
         };
         sessionStorage.remove = function (key) { return window.sessionStorage.removeItem(key); };
@@ -768,7 +769,7 @@ var minamo;
             var request = new XMLHttpRequest();
             request.open(method, url, true);
             if (headers) {
-                console.log("headers: ".concat(JSON.stringify(headers)));
+                console.log("headers: ".concat(core.jsonStringify(headers)));
                 Object.keys(headers).forEach(function (key) { return request.setRequestHeader(key, headers[key]); });
             }
             request.onreadystatechange = function () {
