@@ -10,6 +10,7 @@ export module minamo
         }
         export type Jsonable = JsonableValue | Jsonable[] | JsonableObject;
         export const jsonStringify = <T extends Jsonable>(source: T, replacer?: (this: any, key: string, value: any) => any, space?: string | number) => JSON.stringify(source, replacer, space);
+        export const extender = <Base>() => <Extended extends Base>(x: Extended) => x; // TypeScript 4.8 以降では satisfies の使用を推奨
         export const timeout = async (wait: number): Promise<void> =>
             new Promise<void>(resolve => setTimeout(resolve, wait));
         export const tryOrThrough = function<ResultType, ArgumentType extends unknown[]>(title: string, f: (...args: ArgumentType) => ResultType, ...args: ArgumentType): ResultType | undefined

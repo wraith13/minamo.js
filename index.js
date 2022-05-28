@@ -58,6 +58,7 @@ var minamo;
     (function (core_1) {
         var _this = this;
         core_1.jsonStringify = function (source, replacer, space) { return JSON.stringify(source, replacer, space); };
+        core_1.extender = function () { return function (x) { return x; }; }; // TypeScript 4.8 以降では satisfies の使用を推奨
         core_1.timeout = function (wait) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (resolve) { return setTimeout(resolve, wait); })];
         }); }); };
