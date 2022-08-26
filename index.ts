@@ -9,6 +9,7 @@ export module minamo
             [key: string]: undefined | Jsonable;
         }
         export type Jsonable = JsonableValue | Jsonable[] | JsonableObject;
+        export type JsonablePartial<Target> = { [key in keyof Target]?: Target[key] } & minamo.core.JsonableObject;
         export const jsonStringify = <T extends Jsonable>(source: T, replacer?: (this: any, key: string, value: any) => any, space?: string | number) => JSON.stringify(source, replacer, space);
         export const extender = <Base>() => <Extended extends Base>(x: Extended) => x; // TypeScript 4.8 以降では satisfies の使用を推奨
         export const timeout = async (wait: number): Promise<void> =>
