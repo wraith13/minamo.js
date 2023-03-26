@@ -9,7 +9,7 @@ export module minamo
             [key: string]: undefined | Jsonable;
         }
         export type Jsonable = JsonableValue | Jsonable[] | JsonableObject;
-        export type JsonablePartial<Target> = { [key in keyof Target]?: Target[key] } & minamo.core.JsonableObject;
+        export type JsonablePartial<Target> = { [key in keyof Target]?: Target[key] } & JsonableObject;
         export const jsonStringify = <T extends Jsonable>(source: T, replacer?: (this: any, key: string, value: any) => any, space?: string | number) => JSON.stringify(source, replacer, space);
         export const extender = <Base>() => <Extended extends Base>(x: Extended) => x; // TypeScript 4.8 以降では satisfies の使用を推奨
         export const timeout = async (wait: number): Promise<void> =>
@@ -465,6 +465,56 @@ export module minamo
             };
             export const lowerCase = make<string>([a => a.toLowerCase(), { raw:basic }]);
         }
+        export const parseTimespan = (timespan: any):number | null =>
+        {
+            try
+            {
+                switch(typeof timespan)
+                {
+                case "number":
+                    return timespan;
+                case "string":
+                    if (timespan.endsWith("ms"))
+                    {
+                        return parseFloat(timespan.substring(0, timespan.length -2).trim());
+                    }
+                    else
+                    if (timespan.endsWith("s"))
+                    {
+                        return parseFloat(timespan.substring(0, timespan.length -1).trim()) *1000;
+                    }
+                    else
+                    if (timespan.endsWith("m"))
+                    {
+                        return parseFloat(timespan.substring(0, timespan.length -1).trim()) *60 *1000;
+                    }
+                    else
+                    if (timespan.endsWith("h"))
+                    {
+                        return parseFloat(timespan.substring(0, timespan.length -1).trim()) *60 *60 *1000;
+                    }
+                    else
+                    if (timespan.endsWith("d"))
+                    {
+                        return parseFloat(timespan.substring(0, timespan.length -1).trim()) *24 *60 *60 *1000;
+                    }
+                    else
+                    if (timespan.endsWith("y"))
+                    {
+                        return parseFloat(timespan.substring(0, timespan.length -1).trim()) *365.2425 *24 *60 *60 *1000;
+                    }
+                    else
+                    {
+                        return parseInt(timespan.trim());
+                    }
+                }
+            }
+            catch(err)
+            {
+                console.error(err);
+            }
+            return null;
+        };
     }
     export module environment
     {

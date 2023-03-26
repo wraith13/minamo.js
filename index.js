@@ -467,6 +467,40 @@ var minamo;
             };
             comparer.lowerCase = comparer.make([function (a) { return a.toLowerCase(); }, { raw: comparer.basic }]);
         })(comparer = core_1.comparer || (core_1.comparer = {}));
+        core_1.parseTimespan = function (timespan) {
+            try {
+                switch (typeof timespan) {
+                    case "number":
+                        return timespan;
+                    case "string":
+                        if (timespan.endsWith("ms")) {
+                            return parseFloat(timespan.substring(0, timespan.length - 2).trim());
+                        }
+                        else if (timespan.endsWith("s")) {
+                            return parseFloat(timespan.substring(0, timespan.length - 1).trim()) * 1000;
+                        }
+                        else if (timespan.endsWith("m")) {
+                            return parseFloat(timespan.substring(0, timespan.length - 1).trim()) * 60 * 1000;
+                        }
+                        else if (timespan.endsWith("h")) {
+                            return parseFloat(timespan.substring(0, timespan.length - 1).trim()) * 60 * 60 * 1000;
+                        }
+                        else if (timespan.endsWith("d")) {
+                            return parseFloat(timespan.substring(0, timespan.length - 1).trim()) * 24 * 60 * 60 * 1000;
+                        }
+                        else if (timespan.endsWith("y")) {
+                            return parseFloat(timespan.substring(0, timespan.length - 1).trim()) * 365.2425 * 24 * 60 * 60 * 1000;
+                        }
+                        else {
+                            return parseInt(timespan.trim());
+                        }
+                }
+            }
+            catch (err) {
+                console.error(err);
+            }
+            return null;
+        };
     })(core = minamo.core || (minamo.core = {}));
     var environment;
     (function (environment) {
