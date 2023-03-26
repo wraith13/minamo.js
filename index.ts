@@ -3,6 +3,12 @@ export module minamo
 {
     export module core
     {
+        export function undefinedable<ParameterType, ReturnType>(target: (parameter: ParameterType) => ReturnType): (parameter: ParameterType | undefined) => ReturnType | undefined;
+        export function undefinedable<ParameterType, ReturnType, DefaultType>(target: (parameter: ParameterType) => ReturnType, defaultResult: DefaultType): (parameter: ParameterType | undefined) => ReturnType | DefaultType;
+        export function undefinedable<ParameterType, ReturnType, DefaultType>(target: (parameter: ParameterType) => ReturnType, defaultResult?: DefaultType)
+        {
+            return (parameter: ParameterType | undefined) => undefined === parameter ? defaultResult: target(parameter);
+        }
         export type JsonableValue = null | boolean | number | string;
         export interface JsonableObject
         {
