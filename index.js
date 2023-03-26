@@ -501,6 +501,47 @@ var minamo;
             }
             return null;
         };
+        core_1.timespanToString = function (value) {
+            if (value < 0) {
+                return "-".concat(core_1.timespanToString(-value));
+            }
+            else {
+                var units = [
+                    {
+                        label: "y",
+                        size: 365.2425 * 24 * 60 * 60 * 1000
+                    },
+                    {
+                        label: "d",
+                        size: 24 * 60 * 60 * 1000
+                    },
+                    {
+                        label: "h",
+                        size: 60 * 60 * 1000
+                    },
+                    {
+                        label: "m",
+                        size: 60 * 1000
+                    },
+                    {
+                        label: "s",
+                        size: 1000
+                    },
+                    {
+                        label: "ms",
+                        size: 1
+                    }
+                ];
+                var i = 0;
+                do {
+                    var unit = units[i];
+                    if (unit.size <= value) {
+                        return "".concat(value / unit.size).concat(unit.label);
+                    }
+                } while (++i < units.length);
+                return "".concat(value, "ms");
+            }
+        };
     })(core = minamo.core || (minamo.core = {}));
     var environment;
     (function (environment) {

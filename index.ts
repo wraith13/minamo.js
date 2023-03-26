@@ -515,6 +515,54 @@ export module minamo
             }
             return null;
         };
+        export const timespanToString = (value: number): string =>
+        {
+            if (value < 0)
+            {
+                return `-${timespanToString(-value)}`;
+            }
+            else
+            {
+                const units =
+                [
+                    {
+                        label: "y",
+                        size: 365.2425 *24 *60 *60 *1000
+                    },
+                    {
+                        label: "d",
+                        size: 24 *60 *60 *1000
+                    },
+                    {
+                        label: "h",
+                        size: 60 *60 *1000
+                    },
+                    {
+                        label: "m",
+                        size: 60 *1000
+                    },
+                    {
+                        label: "s",
+                        size: 1000
+                    },
+                    {
+                        label: "ms",
+                        size: 1
+                    }
+                ];
+                let i = 0;
+                do
+                {
+                    const unit = units[i];
+                    if (unit.size <= value)
+                    {
+                        return `${value/unit.size}${unit.label}`;
+                    }
+                }
+                while(++i < units.length);
+                return `${value}ms`;
+            }
+        };
     }
     export module environment
     {
