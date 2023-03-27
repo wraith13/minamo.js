@@ -15,6 +15,12 @@ export module minamo
         {
             return (parameter: ParameterType | null) => null === parameter ? (defaultResult ?? null): target(parameter);
         }
+        export function nonexistentable<ParameterType, ReturnType>(target: (parameter: ParameterType) => ReturnType): (parameter: ParameterType | null | undefined) => ReturnType | undefined;
+        export function nonexistentable<ParameterType, ReturnType, DefaultType>(target: (parameter: ParameterType) => ReturnType, defaultResult: DefaultType): (parameter: ParameterType | null | undefined) => ReturnType | DefaultType;
+        export function nonexistentable<ParameterType, ReturnType, DefaultType>(target: (parameter: ParameterType) => ReturnType, defaultResult?: DefaultType)
+        {
+            return (parameter: ParameterType | null | undefined) => undefined === parameter || null === parameter ? defaultResult: target(parameter);
+        }
         export type JsonableValue = null | boolean | number | string;
         export interface JsonableObject
         {

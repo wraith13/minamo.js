@@ -65,6 +65,10 @@ var minamo;
             return function (parameter) { return null === parameter ? (defaultResult !== null && defaultResult !== void 0 ? defaultResult : null) : target(parameter); };
         }
         core_1.nullable = nullable;
+        function nonexistentable(target, defaultResult) {
+            return function (parameter) { return undefined === parameter || null === parameter ? defaultResult : target(parameter); };
+        }
+        core_1.nonexistentable = nonexistentable;
         core_1.jsonStringify = function (source, replacer, space) { return JSON.stringify(source, replacer, space); };
         core_1.extender = function () { return function (x) { return x; }; }; // TypeScript 4.8 以降では satisfies の使用を推奨
         core_1.timeout = function (wait) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
