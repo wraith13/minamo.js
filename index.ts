@@ -9,6 +9,12 @@ export module minamo
         {
             return (parameter: ParameterType | undefined) => undefined === parameter ? defaultResult: target(parameter);
         }
+        export function nullable<ParameterType, ReturnType>(target: (parameter: ParameterType) => ReturnType): (parameter: ParameterType | null) => ReturnType | null;
+        export function nullable<ParameterType, ReturnType, DefaultType>(target: (parameter: ParameterType) => ReturnType, defaultResult: DefaultType): (parameter: ParameterType | null) => ReturnType | DefaultType;
+        export function nullable<ParameterType, ReturnType, DefaultType>(target: (parameter: ParameterType) => ReturnType, defaultResult?: DefaultType)
+        {
+            return (parameter: ParameterType | null) => null === parameter ? (defaultResult ?? null): target(parameter);
+        }
         export type JsonableValue = null | boolean | number | string;
         export interface JsonableObject
         {
