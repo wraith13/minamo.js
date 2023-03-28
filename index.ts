@@ -517,6 +517,11 @@ export module minamo
                         return parseFloat(timespan.substring(0, timespan.length -1).trim()) *24 *60 *60 *1000;
                     }
                     else
+                    if (timespan.endsWith("w"))
+                    {
+                        return parseFloat(timespan.substring(0, timespan.length -1).trim()) *7 *24 *60 *60 *1000;
+                    }
+                    else
                     if (timespan.endsWith("y"))
                     {
                         return parseFloat(timespan.substring(0, timespan.length -1).trim()) *365.2425 *24 *60 *60 *1000;
