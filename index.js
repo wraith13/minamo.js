@@ -84,7 +84,7 @@ var minamo;
                 result = f.apply(void 0, args);
             }
             catch (err) {
-                console.error("\uD83D\uDEAB ".concat(title, ": ").concat(err));
+                console.error("\uD83D\uDEAB " + title + ": " + err);
             }
             return result;
         };
@@ -105,7 +105,7 @@ var minamo;
                             return [3 /*break*/, 3];
                         case 2:
                             err_1 = _a.sent();
-                            console.error("\uD83D\uDEAB ".concat(title, ": ").concat(err_1));
+                            console.error("\uD83D\uDEAB " + title + ": " + err_1);
                             return [3 /*break*/, 3];
                         case 3: return [2 /*return*/, result];
                     }
@@ -366,7 +366,7 @@ var minamo;
         };
         core_1.bond = function (head, separator, tail) {
             return core_1.exists(tail) ?
-                "".concat(core_1.existsOrThrow(head)).concat(core_1.existsOrThrow(separator)).concat(tail) :
+                "" + core_1.existsOrThrow(head) + core_1.existsOrThrow(separator) + tail :
                 core_1.existsOrThrow(head);
         };
         core_1.loopMap = function (mapFunction, limit) {
@@ -377,7 +377,7 @@ var minamo;
             }
             while (true) {
                 if ("number" === typeof limit && limit <= index) {
-                    throw new RangeError("minamo.core.loopMap() overs the limit(".concat(limit, ")"));
+                    throw new RangeError("minamo.core.loopMap() overs the limit(" + limit + ")");
                 }
                 var current = mapFunction(index++, result);
                 if (core_1.exists(current)) {
@@ -402,37 +402,40 @@ var minamo;
         };
         core_1.zeroPadding = function (length, n) {
             if (21 < length) {
-                throw new RangeError("length(".concat(length, ") in minamo.core.zeroPadding() overs 21."));
+                throw new RangeError("length(" + length + ") in minamo.core.zeroPadding() overs 21.");
             }
             if (1e+21 <= n) {
-                throw new RangeError("n(".concat(n, ") in minamo.core.zeroPadding() is 1e+21 or more."));
+                throw new RangeError("n(" + n + ") in minamo.core.zeroPadding() is 1e+21 or more.");
             }
             if (n <= -1e+21) {
-                throw new RangeError("n(".concat(n, ") in minamo.core.zeroPadding() is -1e+21 or less."));
+                throw new RangeError("n(" + n + ") in minamo.core.zeroPadding() is -1e+21 or less.");
             }
             var sign = n < 0 ? "-" : "";
-            var core = "".concat(Math.abs(Math.round(n)));
+            var core = "" + Math.abs(Math.round(n));
             var paddingLength = length - (sign.length + core.length);
             var padding = 0 < paddingLength ? "00000000000000000000".substr(-paddingLength) : "";
-            return "".concat(sign).concat(padding).concat(core);
+            return "" + sign + padding + core;
         };
         core_1.NYI = function (_) {
             if (_ === void 0) { _ = null; }
             throw new Error("Not Yet Implement!");
         };
         var comparer;
-        (function (comparer) {
-            comparer.basic = function (a, b) {
+        (function (comparer_1) {
+            comparer_1.basic = function (a, b) {
                 return a < b ? -1 :
                     b < a ? 1 :
                         0;
             };
-            comparer.make = function (source) {
+            comparer_1.reverse = function (comparer) {
+                return function (a, b) { return -comparer(a, b); };
+            };
+            comparer_1.make = function (source) {
                 var _a;
                 var invoker = function (i) {
                     var f = i;
                     if ("function" === typeof f) {
-                        return function (a, b) { return comparer.basic(f(a), f(b)); };
+                        return function (a, b) { return comparer_1.basic(f(a), f(b)); };
                     }
                     var r = i;
                     if (undefined !== (r === null || r === void 0 ? void 0 : r.raw)) {
@@ -440,7 +443,7 @@ var minamo;
                     }
                     var s = i;
                     if (undefined !== (s === null || s === void 0 ? void 0 : s.getter)) {
-                        var body_1 = function (a, b) { return comparer.basic(s.getter(a), s.getter(b)); };
+                        var body_1 = function (a, b) { return comparer_1.basic(s.getter(a), s.getter(b)); };
                         if (undefined === s.condition) {
                             return body_1;
                         }
@@ -477,7 +480,7 @@ var minamo;
                     return (_a = invoker(source)) !== null && _a !== void 0 ? _a : (function () { return 0; });
                 }
             };
-            comparer.lowerCase = comparer.make([function (a) { return a.toLowerCase(); }, { raw: comparer.basic }]);
+            comparer_1.lowerCase = comparer_1.make([function (a) { return a.toLowerCase(); }, { raw: comparer_1.basic }]);
         })(comparer = core_1.comparer || (core_1.comparer = {}));
         core_1.parseTimespan = function (timespan) {
             try {
@@ -518,7 +521,7 @@ var minamo;
         };
         core_1.timespanToString = function (value) {
             if (value < 0) {
-                return "-".concat(core_1.timespanToString(-value));
+                return "-" + core_1.timespanToString(-value);
             }
             else {
                 var units = [
@@ -551,10 +554,10 @@ var minamo;
                 do {
                     var unit = units[i];
                     if (unit.size <= value) {
-                        return "".concat(value / unit.size).concat(unit.label);
+                        return "" + value / unit.size + unit.label;
                     }
                 } while (++i < units.length);
-                return "".concat(value, "ms");
+                return value + "ms";
             }
         };
     })(core = minamo.core || (minamo.core = {}));
@@ -578,8 +581,8 @@ var minamo;
         var cache = null;
         cookie.setRaw = function (key, value, maxAge) {
             document.cookie = core.exists(maxAge) ?
-                "".concat(key, "=").concat(value, "; max-age=").concat(maxAge) :
-                "".concat(key, "=").concat(value);
+                key + "=" + value + "; max-age=" + maxAge :
+                key + "=" + value;
             cookie.cacheOrUpdate()[key] = value;
             return value;
         };
@@ -860,7 +863,7 @@ var minamo;
             var request = new XMLHttpRequest();
             request.open(method, url, true);
             if (headers) {
-                console.log("headers: ".concat(core.jsonStringify(headers)));
+                console.log("headers: " + core.jsonStringify(headers));
                 Object.keys(headers).forEach(function (key) { return request.setRequestHeader(key, headers[key]); });
             }
             request.onreadystatechange = function () {
@@ -876,7 +879,7 @@ var minamo;
                     }
                 }
             };
-            console.log("body: ".concat(JSON.stringify(body)));
+            console.log("body: " + JSON.stringify(body));
             request.send(body); // VS Code エディター上で異なる ES バージョンでコンパイルされエラー表示されてしまう問題回避の為の any
         }); };
         http.get = function (url, headers) { return http.request("GET", url, undefined, headers); };
@@ -950,7 +953,7 @@ var minamo;
                         tag_1 = "a";
                         break;
                     case "heading":
-                        tag_1 = "h".concat(level);
+                        tag_1 = "h" + level;
                         break;
                     case "dlist":
                         tag_1 = "dl";

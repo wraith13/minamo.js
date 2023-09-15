@@ -399,6 +399,8 @@ export module minamo
                 a < b ? -1:
                 b < a ? 1:
                 0;
+            export const reverse = <valueT>(comparer: ComparerType<valueT>) =>
+                (a: valueT, b: valueT): CompareResultType => <CompareResultType>-comparer(a, b);
             export interface RawSource<objectT>
             {
                 raw: ComparerType<objectT>;
