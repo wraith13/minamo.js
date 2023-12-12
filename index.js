@@ -74,6 +74,32 @@ var minamo;
         core_1.timeout = function (wait) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (resolve) { return setTimeout(resolve, wait); })];
         }); }); };
+        var Timer = /** @class */ (function () {
+            function Timer(callback, wait) {
+                var _this = this;
+                this.callback = callback;
+                this.wait = wait;
+                this.isWaiting = function () { return undefined !== _this.timer; };
+                this.clear = function () {
+                    if (_this.isWaiting()) {
+                        clearTimeout(_this.timer);
+                        _this.timer = undefined;
+                    }
+                };
+                this.set = function (wait) {
+                    _this.clear();
+                    _this.timer = setTimeout(function () {
+                        _this.timer = undefined;
+                        return _this.callback();
+                    }, wait !== null && wait !== void 0 ? wait : _this.wait);
+                };
+                if (undefined !== wait) {
+                    this.set(wait);
+                }
+            }
+            return Timer;
+        }());
+        core_1.Timer = Timer;
         core_1.tryOrThrough = function (title, f) {
             var args = [];
             for (var _i = 2; _i < arguments.length; _i++) {

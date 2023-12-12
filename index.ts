@@ -32,6 +32,39 @@ export module minamo
         export const extender = <Base>() => <Extended extends Base>(x: Extended) => x; // TypeScript 4.8 以降では satisfies の使用を推奨
         export const timeout = async (wait: number): Promise<void> =>
             new Promise<void>(resolve => setTimeout(resolve, wait));
+        export class Timer
+        {
+            timer: ReturnType<typeof setTimeout> | undefined;
+            constructor(public callback: () => unknown, public wait: number)
+            {
+                if (undefined !== wait)
+                {
+                    this.set(wait);
+                }
+            }
+            isWaiting = () => undefined !== this.timer;
+            clear = () =>
+            {
+                if (this.isWaiting())
+                {
+                    clearTimeout(this.timer);
+                    this.timer = undefined;
+                }
+            }
+            set = (wait?: number) =>
+            {
+                this.clear();
+                this.timer = setTimeout
+                (
+                    () =>
+                    {
+                        this.timer = undefined;
+                        return this.callback();
+                    },
+                    wait ?? this.wait
+                );
+            }
+        }
         export const tryOrThrough = function<ResultType, ArgumentType extends unknown[]>(title: string, f: (...args: ArgumentType) => ResultType, ...args: ArgumentType): ResultType | undefined
         {
             let result;
