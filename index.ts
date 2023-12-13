@@ -35,13 +35,7 @@ export module minamo
         export class Timer
         {
             timer: ReturnType<typeof setTimeout> | undefined;
-            constructor(public callback: () => unknown, public wait: number)
-            {
-                if (undefined !== wait)
-                {
-                    this.set(wait);
-                }
-            }
+            constructor(public callback: () => unknown, public wait: number) { }
             isWaiting = () => undefined !== this.timer;
             clear = () =>
             {

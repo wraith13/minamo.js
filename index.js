@@ -93,9 +93,6 @@ var minamo;
                         return _this.callback();
                     }, wait !== null && wait !== void 0 ? wait : _this.wait);
                 };
-                if (undefined !== wait) {
-                    this.set(wait);
-                }
             }
             return Timer;
         }());
