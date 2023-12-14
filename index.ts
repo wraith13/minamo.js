@@ -1057,6 +1057,7 @@ export module minamo
             Node;
         type EventHandler<EventType extends Event> = (event: EventType) => unknown;
         export type AttributesSource = { [key: string]: EventHandler<any> | string };
+        export type EventListenerSource = { [key: string]: EventHandler<any> };
         export type AlphaObjectSource = { [key: string]: EventHandler<any> | Source | AttributesSource | undefined } &
         {
             tag?: string,
@@ -1065,6 +1066,7 @@ export module minamo
             attributes?: AttributesSource,
             children?: Source,
             onclick?: (event: MouseEvent) => unknown,
+            eventListener?: EventListenerSource,
         };
         export type ObjectSource = AlphaObjectSource &
         {
