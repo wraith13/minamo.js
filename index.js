@@ -29,7 +29,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -107,7 +107,7 @@ var minamo;
                 result = f.apply(void 0, args);
             }
             catch (err) {
-                console.error("\uD83D\uDEAB " + title + ": " + err);
+                console.error("\uD83D\uDEAB ".concat(title, ": ").concat(err));
             }
             return result;
         };
@@ -128,7 +128,7 @@ var minamo;
                             return [3 /*break*/, 3];
                         case 2:
                             err_1 = _a.sent();
-                            console.error("\uD83D\uDEAB " + title + ": " + err_1);
+                            console.error("\uD83D\uDEAB ".concat(title, ": ").concat(err_1));
                             return [3 /*break*/, 3];
                         case 3: return [2 /*return*/, result];
                     }
@@ -389,7 +389,7 @@ var minamo;
         };
         core_1.bond = function (head, separator, tail) {
             return core_1.exists(tail) ?
-                "" + core_1.existsOrThrow(head) + core_1.existsOrThrow(separator) + tail :
+                "".concat(core_1.existsOrThrow(head)).concat(core_1.existsOrThrow(separator)).concat(tail) :
                 core_1.existsOrThrow(head);
         };
         core_1.loopMap = function (mapFunction, limit) {
@@ -400,7 +400,7 @@ var minamo;
             }
             while (true) {
                 if ("number" === typeof limit && limit <= index) {
-                    throw new RangeError("minamo.core.loopMap() overs the limit(" + limit + ")");
+                    throw new RangeError("minamo.core.loopMap() overs the limit(".concat(limit, ")"));
                 }
                 var current = mapFunction(index++, result);
                 if (core_1.exists(current)) {
@@ -425,19 +425,19 @@ var minamo;
         };
         core_1.zeroPadding = function (length, n) {
             if (21 < length) {
-                throw new RangeError("length(" + length + ") in minamo.core.zeroPadding() overs 21.");
+                throw new RangeError("length(".concat(length, ") in minamo.core.zeroPadding() overs 21."));
             }
             if (1e+21 <= n) {
-                throw new RangeError("n(" + n + ") in minamo.core.zeroPadding() is 1e+21 or more.");
+                throw new RangeError("n(".concat(n, ") in minamo.core.zeroPadding() is 1e+21 or more."));
             }
             if (n <= -1e+21) {
-                throw new RangeError("n(" + n + ") in minamo.core.zeroPadding() is -1e+21 or less.");
+                throw new RangeError("n(".concat(n, ") in minamo.core.zeroPadding() is -1e+21 or less."));
             }
             var sign = n < 0 ? "-" : "";
-            var core = "" + Math.abs(Math.round(n));
+            var core = "".concat(Math.abs(Math.round(n)));
             var paddingLength = length - (sign.length + core.length);
             var padding = 0 < paddingLength ? "00000000000000000000".substr(-paddingLength) : "";
-            return "" + sign + padding + core;
+            return "".concat(sign).concat(padding).concat(core);
         };
         core_1.NYI = function (_) {
             if (_ === void 0) { _ = null; }
@@ -544,7 +544,7 @@ var minamo;
         };
         core_1.timespanToString = function (value) {
             if (value < 0) {
-                return "-" + core_1.timespanToString(-value);
+                return "-".concat(core_1.timespanToString(-value));
             }
             else {
                 var units = [
@@ -577,10 +577,10 @@ var minamo;
                 do {
                     var unit = units[i];
                     if (unit.size <= value) {
-                        return "" + value / unit.size + unit.label;
+                        return "".concat(value / unit.size).concat(unit.label);
                     }
                 } while (++i < units.length);
-                return value + "ms";
+                return "".concat(value, "ms");
             }
         };
     })(core = minamo.core || (minamo.core = {}));
@@ -593,9 +593,12 @@ var minamo;
         environment.isChrome = function () { return core.NYI(false); };
         environment.isPC = function () { return core.NYI(false); };
         environment.isWindows = function () { return core.NYI(false); };
-        environment.isMac = function () { return core.NYI(false); };
+        environment.isMac = function () { return /Macintosh/.test(navigator.userAgent); };
+        environment.isiPhone = function () { return /iPhone/.test(navigator.userAgent); };
+        environment.isiPad = function () { return /iPad/.test(navigator.userAgent); };
+        environment.isApple = function () { return environment.isMac() || environment.isiPhone() || environment.isiPad(); };
+        environment.isPWA = function () { return window.matchMedia("(display-mode: standalone)").matches; };
         environment.isLinux = function () { return core.NYI(false); };
-        environment.isiOs = function () { return core.NYI(false); };
         environment.isiAndroid = function () { return core.NYI(false); };
     })(environment = minamo.environment || (minamo.environment = {}));
     var cookie;
@@ -604,8 +607,8 @@ var minamo;
         var cache = null;
         cookie.setRaw = function (key, value, maxAge) {
             document.cookie = core.exists(maxAge) ?
-                key + "=" + value + "; max-age=" + maxAge :
-                key + "=" + value;
+                "".concat(key, "=").concat(value, "; max-age=").concat(maxAge) :
+                "".concat(key, "=").concat(value);
             cookie.cacheOrUpdate()[key] = value;
             return value;
         };
@@ -886,7 +889,7 @@ var minamo;
             var request = new XMLHttpRequest();
             request.open(method, url, true);
             if (headers) {
-                console.log("headers: " + core.jsonStringify(headers));
+                console.log("headers: ".concat(core.jsonStringify(headers)));
                 Object.keys(headers).forEach(function (key) { return request.setRequestHeader(key, headers[key]); });
             }
             request.onreadystatechange = function () {
@@ -902,7 +905,7 @@ var minamo;
                     }
                 }
             };
-            console.log("body: " + JSON.stringify(body));
+            console.log("body: ".concat(JSON.stringify(body)));
             request.send(body); // VS Code エディター上で異なる ES バージョンでコンパイルされエラー表示されてしまう問題回避の為の any
         }); };
         http.get = function (url, headers) { return http.request("GET", url, undefined, headers); };
@@ -976,7 +979,7 @@ var minamo;
                         tag_1 = "a";
                         break;
                     case "heading":
-                        tag_1 = "h" + level;
+                        tag_1 = "h".concat(level);
                         break;
                     case "dlist":
                         tag_1 = "dl";
@@ -1152,5 +1155,5 @@ var minamo;
                 dom.removeCSSClass(element, className);
         };
     })(dom = minamo.dom || (minamo.dom = {}));
-})(minamo = exports.minamo || (exports.minamo = {}));
+})(minamo || (exports.minamo = minamo = {}));
 //# sourceMappingURL=index.js.map

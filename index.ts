@@ -625,9 +625,12 @@ export module minamo
         export const isChrome = (): boolean => core.NYI(false);
         export const isPC = (): boolean => core.NYI(false);
         export const isWindows = (): boolean => core.NYI(false);
-        export const isMac = (): boolean => core.NYI(false);
+        export const isMac = (): boolean => /Macintosh/.test(navigator.userAgent);
+        export const isiPhone = (): boolean => /iPhone/.test(navigator.userAgent);
+        export const isiPad = (): boolean => /iPad/.test(navigator.userAgent);
+        export const isApple = (): boolean => isMac() || isiPhone() || isiPad();
+        export const isPWA = ():boolean => window.matchMedia("(display-mode: standalone)").matches;
         export const isLinux = (): boolean => core.NYI(false);
-        export const isiOs = (): boolean => core.NYI(false);
         export const isiAndroid = (): boolean => core.NYI(false);
     }
     export module cookie

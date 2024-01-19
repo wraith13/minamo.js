@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -120,7 +120,7 @@ var test;
             error: undefined,
         };
         try {
-            console.log("try " + expression);
+            console.log("try ".concat(expression));
             result.result = eval(expression);
             result.isSucceeded = true;
         }
@@ -153,7 +153,7 @@ var test;
                     _b.label = 1;
                 case 1:
                     _b.trys.push([1, 3, , 4]);
-                    console.log("try " + expression);
+                    console.log("try ".concat(expression));
                     _a = result;
                     return [4 /*yield*/, test_1.evalAsync(expression)];
                 case 2:
@@ -194,7 +194,7 @@ var test;
                     return [2 /*return*/, {
                             isSucceeded: result.isSucceeded,
                             testType: "success",
-                            expression: "await " + expression,
+                            expression: "await ".concat(expression),
                             data: result.isSucceeded ?
                                 { result: result.result, } :
                                 { error: result.error, },
@@ -223,7 +223,7 @@ var test;
                     return [2 /*return*/, {
                             isSucceeded: !result.isSucceeded,
                             testType: "error",
-                            expression: "await " + expression,
+                            expression: "await ".concat(expression),
                             data: result.isSucceeded ?
                                 { result: result.result, } :
                                 { error: result.error, },
@@ -236,7 +236,7 @@ var test;
         return {
             isSucceeded: result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
             testType: "equal",
-            expression: JSON.stringify(predicted) + " === " + expression,
+            expression: "".concat(JSON.stringify(predicted), " === ").concat(expression),
             data: result.isSucceeded ?
                 { predicted: predicted, result: result.result, } :
                 { predicted: predicted, error: result.error, },
@@ -252,7 +252,7 @@ var test;
                     return [2 /*return*/, {
                             isSucceeded: result.isSucceeded && JSON.stringify(predicted) === JSON.stringify(result.result),
                             testType: "equal",
-                            expression: JSON.stringify(predicted) + " === await " + expression,
+                            expression: "".concat(JSON.stringify(predicted), " === await ").concat(expression),
                             data: result.isSucceeded ?
                                 { predicted: predicted, result: result.result, } :
                                 { predicted: predicted, error: result.error, },
@@ -277,7 +277,8 @@ var test;
                         },
                         makeHeading("h2", "summary"),
                         makeHeading("h2", "minamo.core"),
-                        makeHeading("h3", "minamo.core.exists"), makeResultTable([
+                        makeHeading("h3", "minamo.core.exists"),
+                        makeResultTable([
                             test_1.equalTest("minamo.core.exists({})", true),
                             test_1.equalTest("minamo.core.exists([])", true),
                             test_1.equalTest("minamo.core.exists(\"abc\")", true),
@@ -288,7 +289,9 @@ var test;
                             test_1.equalTest("minamo.core.exists(\"\")", true),
                             test_1.equalTest("minamo.core.exists(null)", false),
                             test_1.equalTest("minamo.core.exists(undefined)", false),
-                        ]), makeHeading("h3", "minamo.core.existsOrThrow"), makeResultTable([
+                        ]),
+                        makeHeading("h3", "minamo.core.existsOrThrow"),
+                        makeResultTable([
                             test_1.equalTest("minamo.core.existsOrThrow({})", {}),
                             test_1.equalTest("minamo.core.existsOrThrow([])", []),
                             test_1.equalTest("minamo.core.existsOrThrow(\"abc\")", "abc"),
@@ -299,7 +302,9 @@ var test;
                             test_1.equalTest("minamo.core.existsOrThrow(\"\")", ""),
                             test_1.errorTest("minamo.core.existsOrThrow(null)"),
                             test_1.errorTest("minamo.core.existsOrThrow(undefined)"),
-                        ]), makeHeading("h3", "minamo.core.getOrCall"), makeResultTable([
+                        ]),
+                        makeHeading("h3", "minamo.core.getOrCall"),
+                        makeResultTable([
                             test_1.equalTest("minamo.core.getOrCall(\"abc\")", "abc"),
                             test_1.equalTest("minamo.core.getOrCall(true)", true),
                             test_1.equalTest("minamo.core.getOrCall(false)", false),
@@ -316,7 +321,8 @@ var test;
                             test_1.equalTest("minamo.core.getOrCall(()=>\"\")", ""),
                             test_1.equalTest("minamo.core.getOrCall(()=>null)", null),
                             test_1.equalTest("minamo.core.getOrCall(()=>undefined)", undefined),
-                        ]), makeHeading("h3", "minamo.core.getOrCallAsync")];
+                        ]),
+                        makeHeading("h3", "minamo.core.getOrCallAsync")];
                     _e = makeResultTable;
                     return [4 /*yield*/, test_1.equalTestAsync("minamo.core.getOrCallAsync(\"abc\")", "abc")];
                 case 1:
@@ -628,7 +634,7 @@ var test;
                         ],
                     }, document.getElementsByTagName("h2")[1]);
                     if (counts.ng) {
-                        document.title = "(" + counts.ng + ") " + document.title;
+                        document.title = "(".concat(counts.ng, ") ").concat(document.title);
                     }
                     setTimeout(function () {
                         var hashRaw = __1.minamo.core.separate(location.href, "#").tail;
@@ -639,7 +645,7 @@ var test;
                                 document.body.scrollTop = target.offsetTop;
                             }
                             else {
-                                console.error("Not found hash " + hash_1);
+                                console.error("Not found hash ".concat(hash_1));
                             }
                         }
                     }, 0);
@@ -647,5 +653,5 @@ var test;
             }
         });
     }); };
-})(test = exports.test || (exports.test = {}));
+})(test || (exports.test = test = {}));
 //# sourceMappingURL=test.js.map
